@@ -1,0 +1,23 @@
+{
+  "id": "mage",
+  "startSceneId": "m_001",
+  "defaultSpeaker": "法师",
+  "assets": {
+    "bg": {
+      "library": "/bg/library.jpg"
+    },
+    "portrait": {
+      "neutral": "/portraits/mage_neutral.png",
+      "curious": "/portraits/mage_curious.png",
+      "serious": "/portraits/mage_serious.png"
+    }
+  },
+  "scenes": [
+    "m_001.json",
+    "m_002.json",
+    "magic/m_magic_001.json",
+    "magic/m_magic_002.json",
+    "quest/m_quest_001.json",
+    "m_end.json"
+  ]
+}

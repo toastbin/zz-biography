@@ -1,0 +1,10 @@
+{
+  "id": "r_002",
+  "background": "forest",
+  "portrait": "neutral",
+  "text": "你跟了我多远？能悄无声息地接近我的人不多。你来这里是为了什么？",
+  "choices": [
+    { "text": "寻求向导",       "nextSceneId": "r_guide_001" },
+    { "text": "谈论森林里的威胁", "nextSceneId": "r_threat_001" }
+  ]
+}

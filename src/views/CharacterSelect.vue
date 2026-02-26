@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import CharacterCard from '@/components/CharacterCard.vue'
 import { characters } from '@/data/characters'
 import type { Character } from '@/types/character'
 
+const router = useRouter()
 const selectedCharacter = ref<Character | null>(null)
 
 function selectCharacter(character: Character) {
@@ -12,8 +14,7 @@ function selectCharacter(character: Character) {
 
 function confirmSelection() {
   if (selectedCharacter.value) {
-    // 后续扩展：跳转到游戏界面或触发自定义事件
-    console.log('Selected character:', selectedCharacter.value)
+    router.push(`/story/${selectedCharacter.value.id}`)
   }
 }
 </script>

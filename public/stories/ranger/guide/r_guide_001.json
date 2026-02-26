@@ -1,0 +1,7 @@
+{
+  "id": "r_guide_001",
+  "background": "forest",
+  "portrait": "calm",
+  "text": "向导……这片森林我闭着眼睛都能走。告诉我你要去哪里。",
+  "next": "r_guide_002"
+}

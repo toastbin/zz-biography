@@ -1,0 +1,7 @@
+{
+  "id": "m_quest_001",
+  "background": "library",
+  "portrait": "serious",
+  "text": "任务？好吧，说来听听。我许久没有离开这图书馆了。",
+  "next": "m_end"
+}

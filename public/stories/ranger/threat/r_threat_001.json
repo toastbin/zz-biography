@@ -1,0 +1,7 @@
+{
+  "id": "r_threat_001",
+  "background": "forest",
+  "portrait": "alert",
+  "text": "威胁？我已经注意到了。北边有异动，兽群正在迁移——这不寻常。",
+  "next": "r_end"
+}

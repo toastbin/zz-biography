@@ -1,0 +1,10 @@
+{
+  "id": "w_002",
+  "background": "village",
+  "portrait": "neutral",
+  "text": "你是来找我的？说吧，有什么事。",
+  "choices": [
+    { "text": "询问他的过去", "nextSceneId": "w_past_001" },
+    { "text": "直接谈任务",   "nextSceneId": "w_mission_001" }
+  ]
+}

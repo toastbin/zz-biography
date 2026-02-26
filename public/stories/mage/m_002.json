@@ -1,0 +1,10 @@
+{
+  "id": "m_002",
+  "background": "library",
+  "portrait": "neutral",
+  "text": "哦，有人来了。你是想学习魔法，还是有什么要委托我的？",
+  "choices": [
+    { "text": "想学习魔法",   "nextSceneId": "m_magic_001" },
+    { "text": "有重要任务相托", "nextSceneId": "m_quest_001" }
+  ]
+}

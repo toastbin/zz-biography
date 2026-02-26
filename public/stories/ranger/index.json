@@ -1,0 +1,23 @@
+{
+  "id": "ranger",
+  "startSceneId": "r_001",
+  "defaultSpeaker": "游侠",
+  "assets": {
+    "bg": {
+      "forest": "/bg/forest.jpg"
+    },
+    "portrait": {
+      "neutral": "/portraits/ranger_neutral.png",
+      "calm":    "/portraits/ranger_calm.png",
+      "alert":   "/portraits/ranger_alert.png"
+    }
+  },
+  "scenes": [
+    "r_001.json",
+    "r_002.json",
+    "guide/r_guide_001.json",
+    "guide/r_guide_002.json",
+    "threat/r_threat_001.json",
+    "r_end.json"
+  ]
+}

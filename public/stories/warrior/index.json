@@ -1,0 +1,24 @@
+{
+  "id": "warrior",
+  "startSceneId": "w_001",
+  "defaultSpeaker": "战士",
+  "assets": {
+    "bg": {
+      "village":     "/bg/village.jpg",
+      "battlefield": "/bg/battlefield.jpg"
+    },
+    "portrait": {
+      "neutral":    "/portraits/warrior_neutral.png",
+      "sad":        "/portraits/warrior_sad.png",
+      "determined": "/portraits/warrior_determined.png"
+    }
+  },
+  "scenes": [
+    "w_001.json",
+    "w_002.json",
+    "past/w_past_001.json",
+    "past/w_past_002.json",
+    "mission/w_mission_001.json",
+    "w_end.json"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "id": "m_magic_001",
+  "background": "library",
+  "portrait": "curious",
+  "text": "魔法并非人人可学。它需要极高的专注力和天赋。你确定吗？",
+  "next": "m_magic_002"
+}
