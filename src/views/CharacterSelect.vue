@@ -14,7 +14,7 @@ function selectCharacter(character: Character) {
 
 function confirmSelection() {
   if (selectedCharacter.value) {
-    router.push(`/story/${selectedCharacter.value.id}`)
+    router.push({ path: `/story/${selectedCharacter.value.id}`, query: { fresh: '1' } })
   }
 }
 </script>

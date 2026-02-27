@@ -6,17 +6,17 @@ defineProps<{
 }>()
 
 defineEmits<{
-  choose: [choice: StoryChoice]
+  choose: [choice: StoryChoice, index: number]
 }>()
 </script>
 
 <template>
   <div class="choice-panel">
     <button
-      v-for="choice in choices"
+      v-for="(choice, index) in choices"
       :key="choice.nextSceneId"
       class="choice-button"
-      @click="$emit('choose', choice)"
+      @click="$emit('choose', choice, index)"
     >
       {{ choice.text }}
     </button>
