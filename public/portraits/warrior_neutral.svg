@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 700" width="400" height="700">
+  <defs>
+    <linearGradient id="armor_body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a8090"/>
+      <stop offset="50%" stop-color="#4a5060"/>
+      <stop offset="100%" stop-color="#2a2e38"/>
+    </linearGradient>
+    <linearGradient id="armor_chest" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#9aa0b0"/>
+      <stop offset="40%" stop-color="#6a7080"/>
+      <stop offset="100%" stop-color="#3a3e48"/>
+    </linearGradient>
+    <linearGradient id="pauldron" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8a9098"/>
+      <stop offset="100%" stop-color="#404550"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8a880"/>
+      <stop offset="100%" stop-color="#a07848"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d0d8e0"/>
+      <stop offset="50%" stop-color="#f0f4f8"/>
+      <stop offset="100%" stop-color="#8090a0"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B1a1a"/>
+      <stop offset="100%" stop-color="#5a1010"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="4" dy="8" stdDeviation="6" flood-color="rgba(0,0,0,0.6)"/>
+    </filter>
+  </defs>
+
+  <!-- Full figure shadow -->
+  <g filter="url(#shadow)">
+
+  <!-- LEGS / LOWER BODY -->
+  <!-- Left greave -->
+  <path d="M155,490 L155,640 L180,640 L185,490 Z" fill="#5a6070" rx="4"/>
+  <path d="M156,490 L158,640 L165,640 L163,490 Z" fill="#7a8090" opacity="0.4"/>
+  <!-- Right greave -->
+  <path d="M215,490 L210,640 L235,640 L240,490 Z" fill="#5a6070"/>
+  <path d="M216,490 L218,640 L225,640 L227,490 Z" fill="#7a8090" opacity="0.4"/>
+  <!-- Knee guards -->
+  <ellipse cx="170" cy="520" rx="18" ry="12" fill="#6a7080"/>
+  <ellipse cx="225" cy="520" rx="18" ry="12" fill="#6a7080"/>
+  <!-- Boots -->
+  <path d="M150,635 L145,670 L190,670 L185,635 Z" fill="#2a2a2a"/>
+  <path d="M210,635 L208,670 L250,670 L245,635 Z" fill="#2a2a2a"/>
+  <ellipse cx="167" cy="670" rx="23" ry="6" fill="#1a1a1a"/>
+  <ellipse cx="229" cy="670" rx="21" ry="6" fill="#1a1a1a"/>
+
+  <!-- LOWER ARMOR / TASSETS -->
+  <path d="M140,410 L145,500 L255,500 L260,410 Z" fill="#505868"/>
+  <path d="M148,420 L152,498 L180,498 L178,420 Z" fill="#404858" opacity="0.5"/>
+  <!-- Hip cloth (red) -->
+  <path d="M145,390 L140,460 L175,455 L178,390 Z" fill="url(#cloth)" opacity="0.9"/>
+  <path d="M222,390 L222,455 L260,460 L255,390 Z" fill="url(#cloth)" opacity="0.9"/>
+
+  <!-- TORSO / CHEST ARMOR -->
+  <path d="M130,250 L125,400 L275,400 L270,250 Z" fill="url(#armor_body)"/>
+  <!-- Chest plate -->
+  <path d="M145,255 L140,370 L260,370 L255,255 Z" fill="url(#armor_chest)"/>
+  <!-- Chest center line (breastplate) -->
+  <line x1="200" y1="260" x2="200" y2="368" stroke="#2a2e38" stroke-width="3"/>
+  <!-- Chest ribs / ridges -->
+  <path d="M148,290 Q200,280 252,290" stroke="#3a3e48" stroke-width="2" fill="none"/>
+  <path d="M148,310 Q200,300 252,310" stroke="#3a3e48" stroke-width="1.5" fill="none"/>
+  <path d="M148,330 Q200,320 252,330" stroke="#3a3e48" stroke-width="1.5" fill="none"/>
+  <!-- Highlight on chest -->
+  <path d="M155,260 Q180,255 200,258" stroke="#b0b8c0" stroke-width="2" fill="none" opacity="0.6"/>
+  <!-- Belly guard -->
+  <path d="M155,360 L155,398 L245,398 L245,360 Z" fill="#484e5e"/>
+  <path d="M158,364 L158,396 L168,396 L168,364 Z" fill="#585e6e" opacity="0.5"/>
+
+  <!-- LEFT PAULDRON (shoulder) -->
+  <path d="M90,250 Q75,220 100,200 Q130,185 160,210 L155,260 Q120,260 90,250 Z" fill="url(#pauldron)"/>
+  <path d="M92,248 Q80,225 103,205" stroke="#9aa0a8" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- LEFT UPPER ARM -->
+  <path d="M95,255 L85,340 L130,345 L140,258 Z" fill="#505868"/>
+  <!-- Left bracer -->
+  <path d="M88,335 L82,390 L115,390 L120,338 Z" fill="#606878"/>
+  <path d="M90,355 L114,356" stroke="#404850" stroke-width="2"/>
+  <path d="M90,370 L113,371" stroke="#404850" stroke-width="1.5"/>
+
+  <!-- RIGHT PAULDRON (shoulder) -->
+  <path d="M310,250 Q325,220 300,200 Q270,185 240,210 L245,260 Q280,260 310,250 Z" fill="url(#pauldron)"/>
+  <path d="M308,248 Q320,225 297,205" stroke="#9aa0a8" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- RIGHT UPPER ARM -->
+  <path d="M305,255 L315,340 L270,345 L260,258 Z" fill="#505868"/>
+  <!-- Right bracer -->
+  <path d="M312,335 L318,390 L285,390 L280,338 Z" fill="#606878"/>
+  <path d="M310,355 L286,356" stroke="#404850" stroke-width="2"/>
+  <path d="M310,370 L287,371" stroke="#404850" stroke-width="1.5"/>
+
+  <!-- RIGHT HAND holding sword -->
+  <!-- Sword grip / handle -->
+  <rect x="306" y="385" width="14" height="55" rx="4" fill="#5a3818"/>
+  <!-- Cross guard -->
+  <rect x="290" y="380" width="46" height="9" rx="3" fill="#808890"/>
+  <!-- Pommel -->
+  <ellipse cx="313" cy="442" rx="10" ry="7" fill="#909898"/>
+  <!-- SWORD BLADE (pointing down) -->
+  <path d="M307,385 L307,640 L313,660 L319,640 L319,385 Z" fill="url(#blade)"/>
+  <!-- Blade edge -->
+  <path d="M307,385 L307,650" stroke="#c8d0d8" stroke-width="0.8" opacity="0.5"/>
+  <path d="M319,385 L319,648" stroke="#606870" stroke-width="0.8" opacity="0.3"/>
+
+  <!-- LEFT HAND (relaxed at side) -->
+  <!-- Fingers -->
+  <path d="M88,385 Q82,400 84,415 Q88,418 92,415 Q92,400 90,385 Z" fill="#c8a880"/>
+  <path d="M95,388 Q90,405 92,420 Q96,422 100,419 Q99,404 96,388 Z" fill="#c8a880"/>
+  <path d="M102,390 Q98,407 100,422 Q104,424 108,421 Q106,406 103,390 Z" fill="#c8a880"/>
+  <path d="M108,392 Q106,408 108,422 Q112,424 115,420 Q113,407 110,392 Z" fill="#c8a880"/>
+  <!-- Thumb -->
+  <path d="M82,388 Q75,398 78,408 Q82,410 85,407 Q86,398 84,388 Z" fill="#c8a880"/>
+
+  <!-- NECK -->
+  <rect x="188" y="195" width="24" height="35" rx="8" fill="#c8a880"/>
+  <!-- Gorget (neck armor) -->
+  <path d="M175,215 L175,240 L225,240 L225,215 Q200,208 175,215 Z" fill="#5a6070"/>
+  <path d="M177,218 Q200,213 223,218" stroke="#8090a0" stroke-width="1.5" fill="none" opacity="0.5"/>
+
+  <!-- HEAD -->
+  <!-- Helmet base -->
+  <path d="M150,130 Q148,70 200,60 Q252,70 250,130 L248,185 Q200,195 152,185 Z" fill="#606878"/>
+  <!-- Helmet top -->
+  <path d="M160,130 Q158,80 200,68 Q242,80 240,130 Z" fill="#707888"/>
+  <path d="M170,128 Q170,85 200,73 Q230,85 230,128 Z" fill="#808898" opacity="0.5"/>
+  <!-- Helmet ridge (crest) -->
+  <path d="M200,60 L200,68" stroke="#9aa0a8" stroke-width="4"/>
+  <!-- Cheek guards -->
+  <path d="M150,130 L148,175 L165,180 L168,135 Z" fill="#585e6e"/>
+  <path d="M250,130 L252,175 L235,180 L232,135 Z" fill="#585e6e"/>
+  <!-- FACE (between cheek guards) -->
+  <path d="M168,135 L168,188 Q200,195 232,188 L232,135 Q200,128 168,135 Z" fill="url(#face)"/>
+  <!-- Eyes (neutral, steady gaze) -->
+  <ellipse cx="185" cy="155" rx="9" ry="6" fill="#1a1008"/>
+  <ellipse cx="215" cy="155" rx="9" ry="6" fill="#1a1008"/>
+  <!-- Iris -->
+  <circle cx="186" cy="156" r="4" fill="#4a3820"/>
+  <circle cx="216" cy="156" r="4" fill="#4a3820"/>
+  <!-- Pupil -->
+  <circle cx="186" cy="156" r="2" fill="#0a0805"/>
+  <circle cx="216" cy="156" r="2" fill="#0a0805"/>
+  <!-- Eye highlight -->
+  <circle cx="187" cy="154" r="1" fill="white" opacity="0.7"/>
+  <circle cx="217" cy="154" r="1" fill="white" opacity="0.7"/>
+  <!-- Eyebrows (straight, neutral) -->
+  <path d="M176,145 Q185,142 194,145" stroke="#3a2810" stroke-width="2.5" fill="none"/>
+  <path d="M206,145 Q215,142 224,145" stroke="#3a2810" stroke-width="2.5" fill="none"/>
+  <!-- Nose -->
+  <path d="M198,162 Q196,170 192,174 Q196,176 200,175 Q204,176 208,174 Q204,170 202,162 Z" fill="#b89060" opacity="0.7"/>
+  <!-- Mouth (firm, closed) -->
+  <path d="M190,182 Q200,185 210,182" stroke="#8a6040" stroke-width="2" fill="none"/>
+  <!-- Scar on left cheek -->
+  <path d="M175,160 L182,172" stroke="#8a5830" stroke-width="1.5" opacity="0.7"/>
+  <!-- Helmet brow shadow -->
+  <path d="M168,135 Q200,128 232,135" stroke="#404850" stroke-width="2" fill="none" opacity="0.5"/>
+
+  </g>
+</svg>

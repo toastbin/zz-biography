@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <!-- Sky gradient: sunset warm tones -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a3e"/>
+      <stop offset="30%" stop-color="#3d1f5c"/>
+      <stop offset="60%" stop-color="#c0522a"/>
+      <stop offset="80%" stop-color="#e8834a"/>
+      <stop offset="100%" stop-color="#f0b060"/>
+    </linearGradient>
+    <!-- Ground gradient -->
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2e1a"/>
+      <stop offset="100%" stop-color="#1e1a0e"/>
+    </linearGradient>
+    <!-- Fog gradient -->
+    <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(240,180,100,0)" />
+      <stop offset="100%" stop-color="rgba(240,180,100,0.18)" />
+    </linearGradient>
+    <!-- Mountain gradient -->
+    <linearGradient id="mtn1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a1f3a"/>
+      <stop offset="100%" stop-color="#3d2e1a"/>
+    </linearGradient>
+    <linearGradient id="mtn2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a2a10"/>
+      <stop offset="100%" stop-color="#2a1e0a"/>
+    </linearGradient>
+    <!-- Lantern glow -->
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,180,50,0.6)"/>
+      <stop offset="100%" stop-color="rgba(255,120,20,0)"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,160,40,0.5)"/>
+      <stop offset="100%" stop-color="rgba(255,100,10,0)"/>
+    </radialGradient>
+    <!-- Stars -->
+    <filter id="star-blur">
+      <feGaussianBlur stdDeviation="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+
+  <!-- Stars (upper portion) -->
+  <g fill="white" filter="url(#star-blur)" opacity="0.8">
+    <circle cx="120" cy="60" r="1.2"/><circle cx="280" cy="40" r="0.8"/>
+    <circle cx="450" cy="80" r="1.5"/><circle cx="610" cy="30" r="1"/>
+    <circle cx="790" cy="55" r="0.7"/><circle cx="950" cy="25" r="1.3"/>
+    <circle cx="1100" cy="70" r="0.9"/><circle cx="1250" cy="45" r="1.1"/>
+    <circle cx="1420" cy="35" r="0.8"/><circle cx="1600" cy="65" r="1.4"/>
+    <circle cx="1750" cy="50" r="0.9"/><circle cx="1870" cy="75" r="1.2"/>
+    <circle cx="200" cy="120" r="0.7"/><circle cx="550" cy="140" r="1"/>
+    <circle cx="850" cy="110" r="0.8"/><circle cx="1300" cy="130" r="0.6"/>
+    <circle cx="1650" cy="100" r="1.1"/><circle cx="60" cy="155" r="0.9"/>
+  </g>
+
+  <!-- Moon -->
+  <circle cx="1650" cy="130" r="55" fill="#f5e6c0" opacity="0.95"/>
+  <circle cx="1670" cy="115" r="55" fill="#c0522a" opacity="0.6"/>
+
+  <!-- Far mountains (silhouette layer 1) -->
+  <path d="M0,620 L80,480 L180,540 L300,400 L420,500 L560,360 L680,450 L800,320 L920,420 L1040,350 L1160,460 L1280,310 L1400,430 L1520,370 L1660,460 L1780,400 L1920,500 L1920,1080 L0,1080 Z" fill="url(#mtn1)" opacity="0.9"/>
+
+  <!-- Near mountains (silhouette layer 2) -->
+  <path d="M0,720 L120,580 L240,650 L380,530 L500,620 L640,500 L760,580 L900,480 L1020,560 L1180,450 L1320,550 L1460,480 L1620,570 L1760,510 L1920,600 L1920,1080 L0,1080 Z" fill="url(#mtn2)" opacity="0.95"/>
+
+  <!-- Ground -->
+  <rect y="800" width="1920" height="280" fill="url(#ground)"/>
+
+  <!-- Path (stone road) -->
+  <path d="M860,1080 L920,800 L1000,800 L1060,1080 Z" fill="#4a3e22" opacity="0.7"/>
+  <path d="M880,1080 L930,830 L990,830 L1040,1080 Z" fill="#5a4e2e" opacity="0.4"/>
+
+  <!-- Ground details: grass patches -->
+  <g fill="#3a4a18" opacity="0.6">
+    <ellipse cx="200" cy="820" rx="60" ry="8"/>
+    <ellipse cx="400" cy="835" rx="45" ry="6"/>
+    <ellipse cx="700" cy="810" rx="70" ry="9"/>
+    <ellipse cx="1200" cy="825" rx="55" ry="7"/>
+    <ellipse cx="1500" cy="815" rx="65" ry="8"/>
+    <ellipse cx="1750" cy="830" rx="50" ry="7"/>
+  </g>
+
+  <!-- Tree: left cluster -->
+  <g transform="translate(150, 650)">
+    <!-- trunk -->
+    <rect x="-8" y="80" width="16" height="100" fill="#2a1a08" rx="3"/>
+    <!-- foliage layers -->
+    <ellipse cx="0" cy="70" rx="45" ry="55" fill="#1a2e08" opacity="0.9"/>
+    <ellipse cx="-15" cy="45" rx="35" ry="45" fill="#223810" opacity="0.85"/>
+    <ellipse cx="10" cy="50" rx="38" ry="48" fill="#1e3408" opacity="0.9"/>
+  </g>
+  <g transform="translate(240, 680)">
+    <rect x="-6" y="60" width="12" height="80" fill="#2a1a08" rx="2"/>
+    <ellipse cx="0" cy="50" rx="35" ry="42" fill="#243a0a" opacity="0.9"/>
+    <ellipse cx="8" cy="30" rx="28" ry="36" fill="#1e3008" opacity="0.85"/>
+  </g>
+
+  <!-- Tree: right cluster -->
+  <g transform="translate(1720, 660)">
+    <rect x="-8" y="80" width="16" height="100" fill="#2a1a08" rx="3"/>
+    <ellipse cx="0" cy="70" rx="48" ry="58" fill="#1a2e08" opacity="0.9"/>
+    <ellipse cx="12" cy="44" rx="36" ry="46" fill="#223810" opacity="0.85"/>
+  </g>
+  <g transform="translate(1620, 690)">
+    <rect x="-6" y="60" width="12" height="80" fill="#2a1a08" rx="2"/>
+    <ellipse cx="0" cy="50" rx="32" ry="40" fill="#243a0a" opacity="0.9"/>
+  </g>
+
+  <!-- Main building: center gate/tower -->
+  <g transform="translate(760, 540)">
+    <!-- Base wall -->
+    <rect x="0" y="160" width="400" height="120" fill="#5a3c1a" rx="2"/>
+    <rect x="0" y="155" width="400" height="12" fill="#7a5228"/>
+    <!-- Gate arch -->
+    <rect x="160" y="180" width="80" height="100" fill="#1a0e05"/>
+    <ellipse cx="200" cy="182" rx="40" ry="22" fill="#1a0e05"/>
+    <!-- Tower body -->
+    <rect x="80" y="60" width="240" height="110" fill="#6a4520"/>
+    <!-- Roof tier 1 -->
+    <path d="M50,60 L200,-10 L350,60 Z" fill="#8B1a1a"/>
+    <path d="M50,60 L350,60 L360,72 L40,72 Z" fill="#6a1414"/>
+    <!-- Roof tier 2 -->
+    <path d="M110,30 L200,-40 L290,30 Z" fill="#8B1a1a"/>
+    <path d="M110,30 L290,30 L298,42 L102,42 Z" fill="#6a1414"/>
+    <!-- Ridge ornament -->
+    <circle cx="200" cy="-45" r="8" fill="#d4a020"/>
+    <!-- Windows -->
+    <rect x="105" y="90" width="30" height="40" rx="2" fill="#1a0e05"/>
+    <rect x="265" y="90" width="30" height="40" rx="2" fill="#1a0e05"/>
+    <!-- Lantern glow -->
+    <ellipse cx="200" cy="140" rx="30" ry="15" fill="url(#glow1)"/>
+  </g>
+
+  <!-- Side building: left -->
+  <g transform="translate(500, 620)">
+    <rect x="0" y="80" width="160" height="80" fill="#5a3c1a"/>
+    <path d="M-20,80 L80,20 L180,80 Z" fill="#8B1a1a"/>
+    <path d="M-20,80 L180,80 L190,92 L-30,92 Z" fill="#6a1414"/>
+    <rect x="55" y="100" width="50" height="60" fill="#1a0e05"/>
+    <ellipse cx="80" cy="102" rx="25" ry="14" fill="#1a0e05"/>
+    <ellipse cx="80" cy="90" rx="20" ry="10" fill="url(#glow2)" opacity="0.8"/>
+  </g>
+
+  <!-- Side building: right -->
+  <g transform="translate(1260, 620)">
+    <rect x="0" y="80" width="160" height="80" fill="#5a3c1a"/>
+    <path d="M-20,80 L80,20 L180,80 Z" fill="#8B1a1a"/>
+    <path d="M-20,80 L180,80 L190,92 L-30,92 Z" fill="#6a1414"/>
+    <rect x="55" y="100" width="50" height="60" fill="#1a0e05"/>
+    <ellipse cx="80" cy="102" rx="25" ry="14" fill="#1a0e05"/>
+    <ellipse cx="80" cy="90" rx="20" ry="10" fill="url(#glow2)" opacity="0.8"/>
+  </g>
+
+  <!-- Lanterns hanging -->
+  <g>
+    <!-- Left lantern -->
+    <line x1="650" y1="700" x2="650" y2="730" stroke="#5a3010" stroke-width="1.5"/>
+    <ellipse cx="650" cy="748" rx="12" ry="18" fill="#d43020"/>
+    <line x1="650" y1="730" x2="640" y2="766" stroke="#5a3010" stroke-width="1"/>
+    <line x1="650" y1="730" x2="660" y2="766" stroke="#5a3010" stroke-width="1"/>
+    <ellipse cx="650" cy="748" rx="12" ry="18" fill="rgba(255,200,50,0.3)"/>
+    <!-- Right lantern -->
+    <line x1="1270" y1="700" x2="1270" y2="730" stroke="#5a3010" stroke-width="1.5"/>
+    <ellipse cx="1270" cy="748" rx="12" ry="18" fill="#d43020"/>
+    <line x1="1270" y1="730" x2="1260" y2="766" stroke="#5a3010" stroke-width="1"/>
+    <line x1="1270" y1="730" x2="1280" y2="766" stroke="#5a3010" stroke-width="1"/>
+    <ellipse cx="1270" cy="748" rx="12" ry="18" fill="rgba(255,200,50,0.3)"/>
+  </g>
+
+  <!-- Atmospheric fog at horizon -->
+  <rect y="760" width="1920" height="120" fill="url(#fog)"/>
+
+  <!-- Foreground dark vignette -->
+  <rect width="1920" height="1080" fill="radial-gradient(ellipse, transparent 40%, rgba(0,0,0,0.5) 100%)" opacity="0.4"/>
+</svg>

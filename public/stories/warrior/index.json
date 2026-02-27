@@ -4,13 +4,13 @@
   "defaultSpeaker": "战士",
   "assets": {
     "bg": {
-      "village":     "/bg/village.jpg",
-      "battlefield": "/bg/battlefield.jpg"
+      "village":     "/bg/village.svg",
+      "battlefield": "/bg/battlefield.svg"
     },
     "portrait": {
-      "neutral":    "/portraits/warrior_neutral.png",
-      "sad":        "/portraits/warrior_sad.png",
-      "determined": "/portraits/warrior_determined.png"
+      "neutral":    "/portraits/warrior_neutral.svg",
+      "sad":        "/portraits/warrior_sad.svg",
+      "determined": "/portraits/warrior_determined.svg"
     }
   },
   "scenes": [
