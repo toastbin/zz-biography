@@ -51,4 +51,9 @@ export interface RawStoryScene {
   text: string
   next?: string
   choices?: StoryChoice[]
+  // ── admin-only metadata ──────────────────────────────────────────────────
+  /** 管理端展示用小标题（不影响游戏逻辑） */
+  title?: string
+  /** 存储派生类型，便于直读 JSON；实际类型由 deriveSceneType() 决定 */
+  type?: 'linear' | 'choice' | 'terminal'
 }

@@ -3,6 +3,8 @@
   "background": "village",
   "text": "你是来找我的？说吧，有什么事。",
   "portrait": "neutral",
+  "title": "选择点1",
+  "type": "choice",
   "choices": [
     {
       "text": "询问他的过去",

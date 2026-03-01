@@ -72,6 +72,15 @@ defineExpose({
         </label>
 
         <label class="field-label">
+          title
+          <input
+            v-model="form.fTitle.value"
+            class="field-input"
+            placeholder="场景小标题（可选）"
+          />
+        </label>
+
+        <label class="field-label">
           background
           <input
             v-model="form.fBackground.value"

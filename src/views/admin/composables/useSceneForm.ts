@@ -4,6 +4,7 @@ import type { RawStoryScene } from '@/types/story'
 
 export function useSceneForm() {
   const fId = ref('')
+  const fTitle = ref('')
   const fBackground = ref('')
   const fPortrait = ref('')
   const fSpeaker = ref('')
@@ -17,6 +18,7 @@ export function useSceneForm() {
   function initialize(entry?: SceneEntry | null) {
     if (!entry) {
       fId.value = ''
+      fTitle.value = ''
       fBackground.value = ''
       fPortrait.value = ''
       fSpeaker.value = ''
@@ -27,6 +29,7 @@ export function useSceneForm() {
     } else {
       const s = entry.scene
       fId.value = s.id
+      fTitle.value = s.title ?? ''
       fBackground.value = s.background ?? ''
       fPortrait.value = s.portrait ?? ''
       fSpeaker.value = s.speaker ?? ''
@@ -50,6 +53,8 @@ export function useSceneForm() {
     }
     if (fPortrait.value) scene.portrait = fPortrait.value
     if (fSpeaker.value) scene.speaker = fSpeaker.value
+    if (fTitle.value) scene.title = fTitle.value
+    scene.type = fType.value
     if (fType.value === 'linear') {
       scene.next = fNext.value
     } else if (fType.value === 'choice') {
@@ -104,6 +109,7 @@ export function useSceneForm() {
 
   return {
     fId,
+    fTitle,
     fBackground,
     fPortrait,
     fSpeaker,

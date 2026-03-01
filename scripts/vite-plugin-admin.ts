@@ -56,6 +56,7 @@ function deriveRelPath(sceneId: string, origins: Set<string>): string {
   return `${sceneId}.json`
 }
 
+// Legacy fallback: infer type from structure for old JSON files that lack a `type` field
 function deriveSceneType(scene: RawStoryScene): 'linear' | 'choice' | 'terminal' {
   if (scene.choices && scene.choices.length > 0) return 'choice'
   if (scene.next) return 'linear'
@@ -135,7 +136,7 @@ export function adminPlugin(): Plugin {
               if (!scenePath || !fs.existsSync(scenePath)) return null
               try {
                 const scene = readJSON<RawStoryScene>(scenePath)
-                return { filePath: relPath, scene, sceneType: deriveSceneType(scene) }
+                return { filePath: relPath, scene, sceneType: scene.type ?? deriveSceneType(scene) }
               } catch { return null }
             }).filter(Boolean)
 
@@ -201,7 +202,7 @@ export function adminPlugin(): Plugin {
               atomicWrite(manifestPath, manifest)
             }
 
-            return json(res, 201, { filePath: relPath, scene, sceneType: deriveSceneType(scene) })
+            return json(res, 201, { filePath: relPath, scene, sceneType: scene.type ?? deriveSceneType(scene) })
           }
 
           // POST /api/admin/stories/:id/normalize-names
@@ -336,7 +337,7 @@ export function adminPlugin(): Plugin {
 
             const scene = await readBody(req) as RawStoryScene
             atomicWrite(scenePath, scene)
-            return json(res, 200, { filePath: relPath, scene, sceneType: deriveSceneType(scene) })
+            return json(res, 200, { filePath: relPath, scene, sceneType: scene.type ?? deriveSceneType(scene) })
           }
 
           // DELETE /api/admin/stories/:id/scenes/:encodedPath

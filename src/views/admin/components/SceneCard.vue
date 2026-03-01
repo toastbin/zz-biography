@@ -23,7 +23,9 @@ const emit = defineEmits<{
     @click="emit('edit')"
   >
     <div class="node-header">
-      <span class="node-id">{{ node.id }}</span>
+      <span class="node-id" :title="node.entry.scene.title ? node.id : undefined">
+        {{ node.entry.scene.title || node.id }}
+      </span>
       <span class="scene-badge" :class="node.entry.sceneType">
         {{ node.entry.sceneType.toUpperCase() }}
       </span>

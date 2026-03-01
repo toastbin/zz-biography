@@ -86,6 +86,8 @@ public/stories/
 | `text` | `string` | 对话或旁白文本 |
 | `next` | `string?` | 下一场景 ID（线性推进），与 `choices` 二选一 |
 | `choices` | `StoryChoice[]?` | 选项列表（分支），与 `next` 二选一 |
+| `title` | `string?` | 管理端展示用小标题（可选，不影响游戏逻辑） |
+| `type` | `'linear' \| 'choice' \| 'terminal'?` | 管理端写入的场景类型（可选，实际类型由运行时 `deriveSceneType()` 决定） |
 
 ### 选项格式（StoryChoice）
 

@@ -480,8 +480,8 @@ async function deleteScene(entry: SceneEntry) {
 }
 
 .left-col {
-  width: 38%;
-  min-width: 280px;
+  width: 28%;
+  min-width: 180px;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   overflow-y: auto;
   padding: 1.25rem 1.5rem;

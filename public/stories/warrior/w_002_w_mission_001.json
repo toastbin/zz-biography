@@ -3,5 +3,6 @@
   "background": "village",
   "text": "好，任务我知道了。我们出发吧。",
   "portrait": "determined",
-  "next": ""
+  "type": "linear",
+  "next": "w_mission_002"
 }
