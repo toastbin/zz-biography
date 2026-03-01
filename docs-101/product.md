@@ -311,6 +311,67 @@ export const MAX_SAVES = 20  // 改成期望数量
 
 ---
 
+### 2.7 管理面板（`/admin`，仅开发环境）
+
+开发模式下（`import.meta.env.DEV`）在主菜单右下角显示隐蔽的 **Admin** 链接。生产构建中路由直接重定向至 `/`。
+
+#### 页面结构
+
+| 路径 | 组件 | 说明 |
+|------|------|------|
+| `/admin` | `AdminHome.vue` | 角色列表 + 新建角色 Modal |
+| `/admin/:characterId` | `AdminStory.vue` | 故事编辑器（manifest / alias / scenes） |
+
+#### AdminStory 功能
+
+**左栏**
+
+| 区域 | 功能 |
+|------|------|
+| MANIFEST | 编辑 `defaultSpeaker`、`startSceneId` 并保存 |
+| BG ALIASES | key→path 映射表，增删行并保存 |
+| PORTRAIT ALIASES | 同上，用于立绘 |
+
+**右栏（Scene 树）**
+
+| 操作 | 说明 |
+|------|------|
+| 搜索框 | 模糊匹配场景 `id`、`title`、`text`、`choices` 文本；下拉显示结果，点击自动滚动并高亮目标卡片（金色边框 2 秒） |
+| 规范化命名 | 按 choice 索引重命名文件（场景 ID 不变） |
+| + New Scene | 打开 Scene Editor Modal 新建场景 |
+| 节点卡片点击 | 打开 Scene Editor Modal 编辑场景 |
+| 节点 `+` 按钮 | 在线性节点后新建并自动链接 |
+| 节点 `✕` 按钮 | 删除场景（起始场景有二次确认） |
+| 未连接场景区 | 孤立场景（orphan）单独展示，同样支持编辑/删除/搜索定位 |
+
+#### 场景搜索 & 定位
+
+搜索框位于 Scene 面板头部右侧。输入关键字后实时过滤，下拉列表显示 `id` + 标题/正文预览。
+点击某项后：
+1. 下拉关闭，输入框清空
+2. 树视图平滑滚动（`scrollIntoView`）至目标 `SceneCard`
+3. 卡片出现金色高亮边框（`border-color: #f0c040`，`box-shadow` 晕染）
+4. 约 2 秒后高亮自动消失
+
+对 orphan 区的场景同样生效。
+
+#### 实现文件
+
+| 文件 | 职责 |
+|------|------|
+| `scripts/vite-plugin-admin.ts` | Vite dev-only 插件，REST API `/api/admin/*` |
+| `src/composables/useAdminApi.ts` | 带类型的 fetch 封装 |
+| `src/views/admin/AdminHome.vue` | 角色列表 + 新建角色 |
+| `src/views/admin/AdminStory.vue` | 故事编辑器主界面，含搜索状态与 scroll 逻辑 |
+| `src/views/admin/components/SceneCard.vue` | 场景节点卡片，支持 `highlighted` prop |
+| `src/views/admin/components/SceneModal.vue` | 场景创建/编辑 Modal |
+| `src/views/admin/components/QuickCreateModal.vue` | 从 choice 行快速新建场景 |
+| `src/views/admin/components/AliasEditor.vue` | 别名表编辑组件 |
+| `src/views/admin/composables/useAliasManager.ts` | BG/Portrait alias 状态管理 |
+| `src/views/admin/composables/useTreeLayout.ts` | 场景树布局算法 |
+
+---
+
 ## 七、开发命令
 
 ```bash

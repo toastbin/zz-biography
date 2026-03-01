@@ -5,7 +5,7 @@
  */
 
 import { createServer } from 'http'
-import { readdirSync, readFileSync, statSync, existsSync, watch } from 'fs'
+import { readdirSync, readFileSync, existsSync, watch } from 'fs'
 import { join, relative, extname, basename } from 'path'
 import { fileURLToPath } from 'url'
 import { exec, execSync } from 'child_process'

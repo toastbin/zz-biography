@@ -6,6 +6,7 @@ defineProps<{
   node: TreeNode
   isStart: boolean
   orphan?: boolean
+  highlighted?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -17,8 +18,9 @@ const emit = defineEmits<{
 
 <template>
   <div
+    :id="'scene-node-' + node.id"
     class="tree-node"
-    :class="[node.entry.sceneType, { orphan }]"
+    :class="[node.entry.sceneType, { orphan, highlighted }]"
     :style="orphan ? undefined : { position: 'absolute', left: node.x + 'px', top: node.y + 'px' }"
     @click="emit('edit')"
   >
@@ -82,6 +84,10 @@ const emit = defineEmits<{
   position: relative;
   opacity: 0.65;
   border-style: dashed;
+}
+.tree-node.highlighted {
+  border-color: #f0c040;
+  box-shadow: 0 0 0 2px rgba(240, 192, 64, 0.35);
 }
 
 .node-header {

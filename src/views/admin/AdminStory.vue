@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAdminApi, type SceneEntry } from '@/composables/useAdminApi'
 import type { StoryManifest, RawStoryScene } from '@/types/story'
@@ -87,6 +87,38 @@ const startSceneId = computed(() => manifest.value?.startSceneId ?? '')
 // ─── tree layout ──────────────────────────────────────────────────────────────
 
 const { treeLayout, nodeMap, edgePath, edgeLabelPos } = useTreeLayout(scenes, startSceneId)
+
+// ─── scene search ─────────────────────────────────────────────────────────────
+
+const searchQuery = ref('')
+const showSearch = ref(false)
+const highlightedId = ref<string | null>(null)
+
+function hideSearchDelayed() {
+  setTimeout(() => (showSearch.value = false), 150)
+}
+
+const searchResults = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return []
+  return scenes.value.filter(({ scene: s }) =>
+    s.id.toLowerCase().includes(q) ||
+    s.title?.toLowerCase().includes(q) ||
+    s.text?.toLowerCase().includes(q) ||
+    s.choices?.some(c => c.text.toLowerCase().includes(q)),
+  )
+})
+
+function scrollToScene(id: string) {
+  searchQuery.value = ''
+  highlightedId.value = id
+  nextTick(() => {
+    document.getElementById('scene-node-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+  })
+  setTimeout(() => {
+    if (highlightedId.value === id) highlightedId.value = null
+  }, 2000)
+}
 
 // ─── scene modal ──────────────────────────────────────────────────────────────
 
@@ -316,6 +348,29 @@ async function deleteScene(entry: SceneEntry) {
           <div class="scenes-header">
             <h2 class="section-title">SCENES</h2>
             <div class="scenes-header-actions">
+              <div class="search-wrap">
+                <input
+                  v-model="searchQuery"
+                  class="search-input"
+                  placeholder="搜索场景…"
+                  @focus="showSearch = true"
+                  @blur="hideSearchDelayed"
+                />
+                <ul v-if="showSearch && searchResults.length" class="search-dropdown">
+                  <li
+                    v-for="e in searchResults"
+                    :key="e.scene.id"
+                    class="search-item"
+                    @mousedown.prevent="scrollToScene(e.scene.id)"
+                  >
+                    <span class="si-id">{{ e.scene.id }}</span>
+                    <span class="si-meta">
+                      <span v-if="e.scene.title" class="si-title">{{ e.scene.title }}</span>
+                      <span v-if="e.scene.text" class="si-text">{{ e.scene.text.slice(0, 50) }}</span>
+                    </span>
+                  </li>
+                </ul>
+              </div>
               <span v-if="normalizeMsg" class="normalize-msg">{{ normalizeMsg }}</span>
               <button class="btn sm" :disabled="normalizing" @click="doNormalizeNames">
                 {{ normalizing ? '处理中…' : '规范化命名' }}
@@ -356,6 +411,7 @@ async function deleteScene(entry: SceneEntry) {
                 :key="node.id"
                 :node="node"
                 :is-start="node.id === startSceneId"
+                :highlighted="node.id === highlightedId"
                 @edit="openEdit(node.entry)"
                 @delete="deleteScene(node.entry)"
                 @add-linear="openCreateFromLinear(node.entry)"
@@ -372,6 +428,7 @@ async function deleteScene(entry: SceneEntry) {
                   :node="{ id: entry.scene.id, entry, col: 0, row: 0, x: 0, y: 0 }"
                   :is-start="false"
                   orphan
+                  :highlighted="entry.scene.id === highlightedId"
                   @edit="openEdit(entry)"
                   @delete="deleteScene(entry)"
                   @add-linear="() => {}"
@@ -658,5 +715,77 @@ async function deleteScene(entry: SceneEntry) {
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* Scene search */
+.search-wrap {
+  position: relative;
+}
+.search-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: #f0f0f0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  outline: none;
+  width: 180px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.search-input:focus {
+  border-color: rgba(240, 192, 64, 0.55);
+}
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 280px;
+  background: rgba(10, 10, 20, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem 0;
+  z-index: 100;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.search-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+.search-item:hover {
+  background: rgba(240, 192, 64, 0.1);
+}
+.si-id {
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #f0c040;
+  flex-shrink: 0;
+}
+.si-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  overflow: hidden;
+}
+.si-title {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.si-text {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.38);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

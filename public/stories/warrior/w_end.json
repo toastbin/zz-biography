@@ -1,7 +1,7 @@
 {
   "id": "w_end",
   "background": "village",
-  "speaker": null,
-  "portrait": null,
-  "text": "（故事待续……）"
+  "text": "（故事待续……）",
+  "title": "结束1",
+  "type": "terminal"
 }
