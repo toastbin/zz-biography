@@ -35,6 +35,9 @@ Root component: `src/App.vue`
 - Node.js ^20.19.0 || >=22.12.0
 - Use pnpm exclusively (not npm/yarn)
 
+## 额外操作
+- 每次进行代码变更时，都要更新 /docs-101 下对应的文档
+
 <!-- gitnexus:start -->
 # GitNexus MCP
 

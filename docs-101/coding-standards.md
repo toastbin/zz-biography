@@ -126,6 +126,20 @@ src/
 ├── router/
 │   └── index.ts         # 路由配置
 ├── views/               # 页面级组件（对应路由）
+│   └── admin/           # Admin 视图（仅 dev 模式可用）
+│       ├── AdminHome.vue            # 角色列表编排层
+│       ├── AdminStory.vue           # 故事编辑编排层
+│       ├── components/              # Admin 专属子组件
+│       │   ├── NewCharacterModal.vue
+│       │   ├── AliasEditor.vue      # 通用 key-value 别名编辑表
+│       │   ├── SceneCard.vue        # 树图场景卡片
+│       │   ├── SceneModal.vue       # 场景 CRUD 弹窗
+│       │   └── QuickCreateModal.vue # 选项分支快速创建弹窗
+│       └── composables/             # Admin 专属 composable
+│           ├── useCharacterList.ts  # 角色列表加载
+│           ├── useAliasManager.ts   # BG/Portrait alias 状态与保存
+│           ├── useSceneForm.ts      # 场景表单字段、校验、build
+│           └── useTreeLayout.ts     # BFS 树布局计算
 ├── components/          # 可复用组件
 ├── data/                # 静态数据 / mock 数据
 ├── types/               # TypeScript 类型定义
@@ -137,6 +151,8 @@ src/
 - `views/` 做编排，`components/` 做展示
 - 数据获取逻辑放在 `views/` 或单独的 composable，不放在 `components/`
 - 类型定义集中在 `types/`，组件内不重复定义
+- 局部 composable 放在与视图同级的 `composables/` 子目录（如 `views/admin/composables/`）
+- Admin 视图的 API 实例（`useAdminApi()`）在父组件调用一次，通过参数传入 composable，避免多次实例化
 
 ---
 
