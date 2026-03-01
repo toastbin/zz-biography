@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAdminApi, type SceneEntry } from '@/composables/useAdminApi'
-import type { StoryManifest, RawStoryScene } from '@/types/story'
+import type { StoryManifest } from '@/types/story'
 import { useAliasManager } from './composables/useAliasManager'
 import { useTreeLayout } from './composables/useTreeLayout'
+import { useManifestForm } from './composables/useManifestForm'
+import { useSubtreeCollapse } from './composables/useSubtreeCollapse'
+import { useSceneSearch } from './composables/useSceneSearch'
+import { useSceneCrud } from './composables/useSceneCrud'
 import AliasEditor from './components/AliasEditor.vue'
 import SceneCard from './components/SceneCard.vue'
 import SceneModal from './components/SceneModal.vue'
@@ -22,41 +26,10 @@ const scenes = ref<SceneEntry[]>([])
 const loading = ref(true)
 const loadError = ref('')
 
-// ─── manifest form ────────────────────────────────────────────────────────────
+// ─── composables ──────────────────────────────────────────────────────────────
 
-const mfDefaultSpeaker = ref('')
-const mfStartSceneId = ref('')
-const mfSaving = ref(false)
-const mfError = ref('')
-const mfSuccess = ref(false)
-
-function initManifestForm() {
-  if (!manifest.value) return
-  mfDefaultSpeaker.value = manifest.value.defaultSpeaker ?? ''
-  mfStartSceneId.value = manifest.value.startSceneId ?? ''
-}
-
-async function saveManifestCore() {
-  if (!manifest.value) return
-  mfSaving.value = true
-  mfError.value = ''
-  mfSuccess.value = false
-  try {
-    const updated = await api.updateManifest(characterId.value, {
-      defaultSpeaker: mfDefaultSpeaker.value || undefined,
-      startSceneId: mfStartSceneId.value,
-    })
-    manifest.value = updated
-    mfSuccess.value = true
-    setTimeout(() => (mfSuccess.value = false), 2000)
-  } catch (e) {
-    mfError.value = String(e)
-  } finally {
-    mfSaving.value = false
-  }
-}
-
-// ─── alias manager ────────────────────────────────────────────────────────────
+const { mfDefaultSpeaker, mfStartSceneId, mfSaving, mfError, mfSuccess, initManifestForm, saveManifestCore } =
+  useManifestForm(manifest, api, characterId)
 
 const aliasManager = useAliasManager(manifest, api, characterId)
 const { bgAliases, portraitAliases, bgSaving, portraitSaving, bgError, portraitError, bgSuccess, portraitSuccess } =
@@ -90,233 +63,26 @@ const { treeLayout, nodeMap, edgePath, edgeLabelPos } = useTreeLayout(scenes, st
 
 // ─── subtree collapse ─────────────────────────────────────────────────────────
 
-const collapsedIds = ref(new Set<string>())
-
-const childrenMap = computed(() => {
-  const map = new Map<string, string[]>()
-  for (const edge of treeLayout.value.edges) {
-    if (!map.has(edge.fromId)) map.set(edge.fromId, [])
-    map.get(edge.fromId)!.push(edge.toId)
-  }
-  return map
-})
-
-const hiddenNodeIds = computed(() => {
-  const hidden = new Set<string>()
-  for (const id of collapsedIds.value) {
-    const queue = [...(childrenMap.value.get(id) ?? [])]
-    while (queue.length) {
-      const cur = queue.shift()!
-      if (!hidden.has(cur)) {
-        hidden.add(cur)
-        queue.push(...(childrenMap.value.get(cur) ?? []))
-      }
-    }
-  }
-  return hidden
-})
-
-const visibleNodes = computed(() =>
-  treeLayout.value.nodes.filter(n => !hiddenNodeIds.value.has(n.id)),
-)
-const visibleEdges = computed(() =>
-  treeLayout.value.edges.filter(
-    e => !hiddenNodeIds.value.has(e.fromId) && !hiddenNodeIds.value.has(e.toId),
-  ),
-)
-
-function toggleCollapse(nodeId: string) {
-  const next = new Set(collapsedIds.value)
-  if (next.has(nodeId)) next.delete(nodeId)
-  else next.add(nodeId)
-  collapsedIds.value = next
-}
+const { collapsedIds, childrenMap, visibleNodes, visibleEdges, toggleCollapse } =
+  useSubtreeCollapse(treeLayout)
 
 // ─── scene search ─────────────────────────────────────────────────────────────
 
-const searchQuery = ref('')
-const showSearch = ref(false)
-const highlightedId = ref<string | null>(null)
+const { searchQuery, showSearch, highlightedId, searchResults, hideSearchDelayed, scrollToScene } =
+  useSceneSearch(scenes)
 
-function hideSearchDelayed() {
-  setTimeout(() => (showSearch.value = false), 150)
-}
-
-const searchResults = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return []
-  return scenes.value.filter(({ scene: s }) =>
-    s.id.toLowerCase().includes(q) ||
-    s.title?.toLowerCase().includes(q) ||
-    s.text?.toLowerCase().includes(q) ||
-    s.choices?.some(c => c.text.toLowerCase().includes(q)),
-  )
-})
-
-function scrollToScene(id: string) {
-  searchQuery.value = ''
-  highlightedId.value = id
-  nextTick(() => {
-    document.getElementById('scene-node-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
-  })
-  setTimeout(() => {
-    if (highlightedId.value === id) highlightedId.value = null
-  }, 2000)
-}
-
-// ─── scene modal ──────────────────────────────────────────────────────────────
+// ─── scene crud ───────────────────────────────────────────────────────────────
 
 const sceneModalRef = ref<InstanceType<typeof SceneModal>>()
-const modalOpen = ref(false)
-const modalMode = ref<'create' | 'edit'>('create')
-const editingEntry = ref<SceneEntry | null>(null)
-const linAfterEntry = ref<SceneEntry | null>(null)
-const suggestedId = ref('')
-const sceneSaving = ref(false)
-const sceneError = ref('')
 
-function suggestNextId(parentId: string): string {
-  const match = parentId.match(/^(.*?)(\d+)$/)
-  if (!match || !match[1] || !match[2]) return ''
-  const pfx = match[1]
-  const num = parseInt(match[2], 10)
-  const digits = match[2].length
-  let n = num + 1
-  while (scenes.value.some(e => e.scene.id === `${pfx}${String(n).padStart(digits, '0')}`)) {
-    n++
-  }
-  return `${pfx}${String(n).padStart(digits, '0')}`
-}
-
-function openCreate() {
-  modalMode.value = 'create'
-  editingEntry.value = null
-  linAfterEntry.value = null
-  suggestedId.value = ''
-  sceneError.value = ''
-  modalOpen.value = true
-}
-
-function openEdit(entry: SceneEntry) {
-  modalMode.value = 'edit'
-  editingEntry.value = entry
-  linAfterEntry.value = null
-  suggestedId.value = ''
-  sceneError.value = ''
-  modalOpen.value = true
-}
-
-function openCreateFromLinear(entry: SceneEntry) {
-  linAfterEntry.value = entry
-  suggestedId.value = suggestNextId(entry.scene.id)
-  modalMode.value = 'create'
-  editingEntry.value = null
-  sceneError.value = ''
-  modalOpen.value = true
-}
-
-async function onSceneSave(scene: RawStoryScene) {
-  sceneSaving.value = true
-  sceneError.value = ''
-  try {
-    if (modalMode.value === 'create') {
-      const entry = await api.createScene(characterId.value, scene)
-      scenes.value.push(entry)
-
-      if (linAfterEntry.value) {
-        const parent = linAfterEntry.value
-        const updatedParent: RawStoryScene = { ...parent.scene, next: scene.id }
-        const updatedEntry = await api.updateScene(characterId.value, parent.filePath, updatedParent)
-        const idx = scenes.value.findIndex(e => e.filePath === parent.filePath)
-        if (idx !== -1) scenes.value[idx] = updatedEntry
-        linAfterEntry.value = null
-      }
-
-      const data = await api.getStory(characterId.value)
-      manifest.value = data.manifest
-    } else {
-      const entry = await api.updateScene(characterId.value, editingEntry.value!.filePath, scene)
-      const idx = scenes.value.findIndex(e => e.filePath === editingEntry.value!.filePath)
-      if (idx !== -1) scenes.value[idx] = entry
-    }
-    modalOpen.value = false
-  } catch (e) {
-    sceneError.value = String(e)
-  } finally {
-    sceneSaving.value = false
-  }
-}
-
-// ─── quick-create modal ───────────────────────────────────────────────────────
-
-const showQuickCreate = ref(false)
-const quickCreateChoiceIdx = ref(-1)
-const quickSaving = ref(false)
-const quickError = ref('')
-
-function handleOpenQuickCreate(choiceIdx: number) {
-  quickCreateChoiceIdx.value = choiceIdx
-  quickError.value = ''
-  showQuickCreate.value = true
-}
-
-async function onQuickSave(scene: RawStoryScene, prefix: string) {
-  quickSaving.value = true
-  quickError.value = ''
-  try {
-    const entry = await api.createScene(characterId.value, scene, prefix || undefined)
-    scenes.value.push(entry)
-    sceneModalRef.value?.linkChoiceScene(quickCreateChoiceIdx.value, entry.scene.id)
-    showQuickCreate.value = false
-  } catch (e) {
-    quickError.value = String(e)
-  } finally {
-    quickSaving.value = false
-  }
-}
-
-// ─── normalize names ──────────────────────────────────────────────────────────
-
-const normalizing = ref(false)
-const normalizeMsg = ref('')
-
-async function doNormalizeNames() {
-  if (!confirm('将根据 choice 索引重命名所有场景文件（文件路径变更，场景 ID 不变）。确认继续？')) return
-  normalizing.value = true
-  normalizeMsg.value = ''
-  try {
-    const result = await api.normalizeNames(characterId.value)
-    const n = result.renamed.length
-    normalizeMsg.value = n > 0 ? `已重命名 ${n} 个文件` : '无需重命名'
-    const data = await api.getStory(characterId.value)
-    manifest.value = data.manifest
-    scenes.value = data.scenes
-    setTimeout(() => (normalizeMsg.value = ''), 3000)
-  } catch (e) {
-    normalizeMsg.value = String(e)
-  } finally {
-    normalizing.value = false
-  }
-}
-
-// ─── delete scene ─────────────────────────────────────────────────────────────
-
-async function deleteScene(entry: SceneEntry) {
-  const isStart = entry.scene.id === manifest.value?.startSceneId
-  const msg = isStart
-    ? `正在删除起始场景「${entry.scene.id}」，请先更新 startSceneId！确定要继续删除吗？`
-    : `确定要删除场景「${entry.scene.id}」吗？`
-  if (!confirm(msg)) return
-
-  try {
-    await api.deleteScene(characterId.value, entry.filePath)
-    scenes.value = scenes.value.filter(e => e.filePath !== entry.filePath)
-    const data = await api.getStory(characterId.value)
-    manifest.value = data.manifest
-  } catch (e) {
-    alert(String(e))
-  }
-}
+const {
+  modalOpen, modalMode, editingEntry, suggestedId, sceneSaving, sceneError,
+  showQuickCreate, quickCreateChoiceIdx, quickSaving, quickError,
+  normalizing, normalizeMsg,
+  openCreate, openEdit, openCreateFromLinear, onSceneSave,
+  handleOpenQuickCreate, onQuickSave,
+  doNormalizeNames, deleteScene,
+} = useSceneCrud(scenes, manifest, api, characterId, sceneModalRef)
 </script>
 
 <template>
