@@ -342,6 +342,7 @@ export const MAX_SAVES = 20  // 改成期望数量
 | 节点卡片点击 | 打开 Scene Editor Modal 编辑场景 |
 | 节点 `+` 按钮 | 在线性节点后新建并自动链接 |
 | 节点 `✕` 按钮 | 删除场景（起始场景有二次确认） |
+| 节点折叠按钮（`▾ 展开` / `▸ 折叠`） | 有子节点的卡片底部出现此按钮；点击后隐藏该节点所有后代节点及其连线，再次点击还原；不影响其他分支 |
 | 未连接场景区 | 孤立场景（orphan）单独展示，同样支持编辑/删除/搜索定位 |
 
 #### 场景搜索 & 定位
@@ -363,7 +364,7 @@ export const MAX_SAVES = 20  // 改成期望数量
 | `src/composables/useAdminApi.ts` | 带类型的 fetch 封装 |
 | `src/views/admin/AdminHome.vue` | 角色列表 + 新建角色 |
 | `src/views/admin/AdminStory.vue` | 故事编辑器主界面，含搜索状态与 scroll 逻辑 |
-| `src/views/admin/components/SceneCard.vue` | 场景节点卡片，支持 `highlighted` prop |
+| `src/views/admin/components/SceneCard.vue` | 场景节点卡片，支持 `highlighted`、`collapsed`、`hasChildren` props；有子节点时卡片底部显示折叠/展开按钮（`▾ 展开` / `▸ 折叠`），点击收起/展开整个后代子树 |
 | `src/views/admin/components/SceneModal.vue` | 场景创建/编辑 Modal |
 | `src/views/admin/components/QuickCreateModal.vue` | 从 choice 行快速新建场景 |
 | `src/views/admin/components/AliasEditor.vue` | 别名表编辑组件 |

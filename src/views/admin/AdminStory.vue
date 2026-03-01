@@ -88,6 +88,50 @@ const startSceneId = computed(() => manifest.value?.startSceneId ?? '')
 
 const { treeLayout, nodeMap, edgePath, edgeLabelPos } = useTreeLayout(scenes, startSceneId)
 
+// ─── subtree collapse ─────────────────────────────────────────────────────────
+
+const collapsedIds = ref(new Set<string>())
+
+const childrenMap = computed(() => {
+  const map = new Map<string, string[]>()
+  for (const edge of treeLayout.value.edges) {
+    if (!map.has(edge.fromId)) map.set(edge.fromId, [])
+    map.get(edge.fromId)!.push(edge.toId)
+  }
+  return map
+})
+
+const hiddenNodeIds = computed(() => {
+  const hidden = new Set<string>()
+  for (const id of collapsedIds.value) {
+    const queue = [...(childrenMap.value.get(id) ?? [])]
+    while (queue.length) {
+      const cur = queue.shift()!
+      if (!hidden.has(cur)) {
+        hidden.add(cur)
+        queue.push(...(childrenMap.value.get(cur) ?? []))
+      }
+    }
+  }
+  return hidden
+})
+
+const visibleNodes = computed(() =>
+  treeLayout.value.nodes.filter(n => !hiddenNodeIds.value.has(n.id)),
+)
+const visibleEdges = computed(() =>
+  treeLayout.value.edges.filter(
+    e => !hiddenNodeIds.value.has(e.fromId) && !hiddenNodeIds.value.has(e.toId),
+  ),
+)
+
+function toggleCollapse(nodeId: string) {
+  const next = new Set(collapsedIds.value)
+  if (next.has(nodeId)) next.delete(nodeId)
+  else next.add(nodeId)
+  collapsedIds.value = next
+}
+
 // ─── scene search ─────────────────────────────────────────────────────────────
 
 const searchQuery = ref('')
@@ -387,7 +431,7 @@ async function deleteScene(entry: SceneEntry) {
             >
               <!-- SVG edge layer -->
               <svg class="tree-svg" :width="treeLayout.canvasW" :height="treeLayout.canvasH">
-                <g v-for="edge in treeLayout.edges" :key="`${edge.fromId}-${edge.toId}`">
+                <g v-for="edge in visibleEdges" :key="`${edge.fromId}-${edge.toId}`">
                   <path
                     v-if="nodeMap.get(edge.fromId) && nodeMap.get(edge.toId)"
                     :d="edgePath(edge)"
@@ -407,14 +451,17 @@ async function deleteScene(entry: SceneEntry) {
 
               <!-- Tree node cards -->
               <SceneCard
-                v-for="node in treeLayout.nodes"
+                v-for="node in visibleNodes"
                 :key="node.id"
                 :node="node"
                 :is-start="node.id === startSceneId"
                 :highlighted="node.id === highlightedId"
+                :collapsed="collapsedIds.has(node.id)"
+                :has-children="(childrenMap.get(node.id)?.length ?? 0) > 0"
                 @edit="openEdit(node.entry)"
                 @delete="deleteScene(node.entry)"
                 @add-linear="openCreateFromLinear(node.entry)"
+                @toggle-collapse="toggleCollapse(node.id)"
               />
             </div>
 

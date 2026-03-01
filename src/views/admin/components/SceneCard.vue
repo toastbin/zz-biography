@@ -7,12 +7,15 @@ defineProps<{
   isStart: boolean
   orphan?: boolean
   highlighted?: boolean
+  collapsed?: boolean
+  hasChildren?: boolean
 }>()
 
 const emit = defineEmits<{
   edit: []
   delete: []
   'add-linear': []
+  'toggle-collapse': []
 }>()
 </script>
 
@@ -39,6 +42,14 @@ const emit = defineEmits<{
         {{ i + 1 }}. {{ ch.text.slice(0, 16) }}
       </li>
     </ul>
+    <button
+      v-if="hasChildren"
+      class="subtree-toggle"
+      @click.stop="emit('toggle-collapse')"
+      :title="collapsed ? '展开子节点' : '折叠子节点'"
+    >
+      {{ collapsed ? '▸ 折叠' : '▾ 展开' }}
+    </button>
   </div>
 
   <!-- Linear "+" button — shown below terminal linear nodes (no next set), not for orphans -->
@@ -126,6 +137,24 @@ const emit = defineEmits<{
 }
 .tree-node:hover .node-delete {
   opacity: 1;
+}
+
+.subtree-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(240, 192, 64, 0.12);
+  color: rgba(240, 192, 64, 0.45);
+  font-size: 0.68rem;
+  cursor: pointer;
+  padding: 0.25rem 0 0.05rem;
+  text-align: center;
+  font-family: inherit;
+  transition: color 0.15s;
+  margin-top: 0.15rem;
+}
+.subtree-toggle:hover {
+  color: rgba(240, 192, 64, 0.85);
 }
 
 .node-choices {
