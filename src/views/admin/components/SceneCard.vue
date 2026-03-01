@@ -2,7 +2,7 @@
 import type { TreeNode } from '../composables/useTreeLayout'
 import { CARD_H } from '../composables/useTreeLayout'
 
-const props = defineProps<{
+defineProps<{
   node: TreeNode
   isStart: boolean
   orphan?: boolean
