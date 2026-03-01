@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+
+const isDev = import.meta.env.DEV
 import { useSaves } from '@/composables/useSaves'
 import SaveSlotList from '@/components/SaveSlotList.vue'
 import type { SaveSlot } from '@/types/save'
@@ -37,6 +39,8 @@ function loadSave(slot: SaveSlot) {
     </div>
 
     <SaveSlotList v-if="showLoad" @load="loadSave" @close="showLoad = false" />
+
+    <router-link v-if="isDev" to="/admin" class="admin-link">Admin</router-link>
   </div>
 </template>
 
@@ -116,4 +120,16 @@ function loadSave(slot: SaveSlot) {
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+.admin-link {
+  position: fixed;
+  bottom: 1rem;
+  right: 1.25rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.admin-link:hover { color: rgba(240, 192, 64, 0.6); }
 </style>

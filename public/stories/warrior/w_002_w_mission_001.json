@@ -1,7 +1,7 @@
 {
   "id": "w_mission_001",
   "background": "village",
-  "portrait": "determined",
   "text": "好，任务我知道了。我们出发吧。",
-  "next": "w_end"
+  "portrait": "determined",
+  "next": ""
 }

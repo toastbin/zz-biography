@@ -67,14 +67,14 @@ function renderMarkdown(text) {
     .split('\n')
     .map((line) => {
       // h1
-      if (/^# /.test(line))
+      if (line.startsWith('# '))
         return fmt(c.bold + c.cyan, line.replace(/^# /, '  ◆ ').toUpperCase())
       // h2
-      if (/^## /.test(line)) return fmt(c.bold + c.yellow, line.replace(/^## /, '\n  ▸ '))
+      if (line.startsWith('## ')) return fmt(c.bold + c.yellow, line.replace(/^## /, '\n  ▸ '))
       // h3
-      if (/^### /.test(line)) return fmt(c.bold, line.replace(/^### /, '    › '))
+      if (line.startsWith('### ')) return fmt(c.bold, line.replace(/^### /, '    › '))
       // code block markers
-      if (/^```/.test(line)) return fmt(c.dim, '  ' + '─'.repeat(50))
+      if (line.startsWith('```')) return fmt(c.dim, '  ' + '─'.repeat(50))
       // table header separator
       if (/^\|[-| :]+\|$/.test(line)) return fmt(c.dim, line)
       // inline code: `foo`

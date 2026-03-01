@@ -15,9 +15,9 @@
   "scenes": [
     "r_001.json",
     "r_002.json",
-    "guide/r_guide_001.json",
-    "guide/r_guide_002.json",
-    "threat/r_threat_001.json",
+    "r_002_r_guide_001.json",
+    "r_002_r_guide_002.json",
+    "r_002_r_threat_001.json",
     "r_end.json"
   ]
 }

@@ -4,21 +4,21 @@
   "defaultSpeaker": "战士",
   "assets": {
     "bg": {
-      "village":     "/bg/village.svg",
+      "village": "/bg/village.svg",
       "battlefield": "/bg/battlefield.svg"
     },
     "portrait": {
-      "neutral":    "/portraits/warrior_neutral.svg",
-      "sad":        "/portraits/warrior_sad.svg",
+      "neutral": "/portraits/warrior_neutral.svg",
+      "sad": "/portraits/warrior_sad.svg",
       "determined": "/portraits/warrior_determined.svg"
     }
   },
   "scenes": [
     "w_001.json",
     "w_002.json",
-    "past/w_past_001.json",
-    "past/w_past_002.json",
-    "mission/w_mission_001.json",
+    "w_002_w_past_001.json",
+    "w_002_w_past_002.json",
+    "w_002_w_mission_001.json",
     "w_end.json"
   ]
 }

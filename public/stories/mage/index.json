@@ -1,7 +1,7 @@
 {
   "id": "mage",
   "startSceneId": "m_001",
-  "defaultSpeaker": "法师",
+  "defaultSpeaker": "法师1",
   "assets": {
     "bg": {
       "library": "/bg/library.jpg"
@@ -15,9 +15,9 @@
   "scenes": [
     "m_001.json",
     "m_002.json",
-    "magic/m_magic_001.json",
-    "magic/m_magic_002.json",
-    "quest/m_quest_001.json",
+    "m_002_m_magic_001.json",
+    "m_002_m_magic_002.json",
+    "m_002_m_quest_001.json",
     "m_end.json"
   ]
 }
