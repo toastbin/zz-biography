@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAdminApi, type SceneEntry } from '@/composables/useAdminApi'
 import type { StoryManifest } from '@/types/story'
@@ -29,8 +29,12 @@ const loadError = ref('')
 
 // ─── composables ──────────────────────────────────────────────────────────────
 
-const { mfDefaultSpeaker, mfStartSceneId, mfSaving, mfError, mfSuccess, initManifestForm, saveManifestCore } =
-  useManifestForm(manifest, api, characterId)
+const {
+  mfDefaultSpeaker, mfDefaultSpeakerPortraits, mfStartSceneId,
+  mfSaving, mfError, mfSuccess,
+  initManifestForm, saveManifestCore,
+  addDefaultSpeakerPortrait, removeDefaultSpeakerPortrait,
+} = useManifestForm(manifest, api, characterId)
 
 const aliasManager = useAliasManager(manifest, api, characterId)
 const { bgAliases, portraitAliases, bgSaving, portraitSaving, bgError, portraitError, bgSuccess, portraitSuccess } =
@@ -38,6 +42,16 @@ const { bgAliases, portraitAliases, bgSaving, portraitSaving, bgError, portraitE
 
 const npcEditor = useNpcEditor(manifest, api, characterId)
 const { npcRows, npcSaving, npcError, npcSuccess } = npcEditor
+
+// manifest protagonist portrait add input
+const mfPortraitInput = ref('')
+
+// per-NPC add-portrait input values (parallel to npcRows)
+const npcPortraitInputs = ref<string[]>([])
+watch(npcRows, rows => {
+  while (npcPortraitInputs.value.length < rows.length) npcPortraitInputs.value.push('')
+  npcPortraitInputs.value.length = rows.length
+}, { immediate: true })
 
 onMounted(async () => {
   try {
@@ -62,6 +76,20 @@ const knownBgKeys = computed(() => bgAliases.value.map(r => r.key).filter(Boolea
 const knownPortraitKeys = computed(() => portraitAliases.value.map(r => r.key).filter(Boolean))
 const knownNpcs = computed(() => manifest.value?.npcs?.map(n => ({ id: n.id, name: n.name })) ?? [])
 const startSceneId = computed(() => manifest.value?.startSceneId ?? '')
+
+// speaker name → portrait alias keys map (for scene modal portrait dropdown)
+const speakerPortraitMap = computed(() => {
+  const map: Record<string, string[]> = {}
+  if (mfDefaultSpeaker.value && mfDefaultSpeakerPortraits.value.length) {
+    map[mfDefaultSpeaker.value] = mfDefaultSpeakerPortraits.value
+  }
+  for (const npc of npcRows.value) {
+    if (npc.name && npc.portraits.length) {
+      map[npc.name] = npc.portraits
+    }
+  }
+  return map
+})
 
 // ─── tree layout ──────────────────────────────────────────────────────────────
 
@@ -120,6 +148,27 @@ const {
               defaultSpeaker
               <input v-model="mfDefaultSpeaker" class="field-input" placeholder="角色名" />
             </label>
+            <div class="field-label">
+              portrait (主角)
+              <div class="portrait-chips">
+                <span v-for="(key, ki) in mfDefaultSpeakerPortraits" :key="ki" class="portrait-chip">
+                  {{ key }}
+                  <button class="chip-remove" @click="removeDefaultSpeakerPortrait(ki)">×</button>
+                </span>
+              </div>
+              <div class="portrait-add-row">
+                <input
+                  v-model="mfPortraitInput"
+                  list="portrait-keys-datalist"
+                  class="field-input"
+                  :class="{ invalid: mfPortraitInput && !knownPortraitKeys.includes(mfPortraitInput) }"
+                  style="flex:1"
+                  placeholder="选择或输入别名"
+                  @change="knownPortraitKeys.includes(mfPortraitInput) && (addDefaultSpeakerPortrait(mfPortraitInput), (mfPortraitInput = ''))"
+                  @keydown.enter.prevent="knownPortraitKeys.includes(mfPortraitInput) && (addDefaultSpeakerPortrait(mfPortraitInput), (mfPortraitInput = ''))"
+                />
+              </div>
+            </div>
             <label class="field-label">
               startSceneId
               <select v-model="mfStartSceneId" class="field-select">
@@ -137,11 +186,33 @@ const {
           <!-- NPCs section -->
           <section class="section">
             <h2 class="section-title">NPCS</h2>
-            <div v-for="(npc, i) in npcRows" :key="i" class="npc-row">
-              <input v-model="npc.id" class="field-input npc-id" placeholder="id" />
-              <input v-model="npc.name" class="field-input npc-name" placeholder="名称" />
-              <input v-model.number="npc.initialAffinity" class="field-input npc-affinity" type="number" placeholder="0" />
-              <button class="icon-btn" @click="npcEditor.removeNpc(i)">✕</button>
+            <div v-for="(npc, i) in npcRows" :key="i" class="npc-block">
+              <div class="npc-row">
+                <input v-model="npc.id" class="field-input npc-id" placeholder="id" />
+                <input v-model="npc.name" class="field-input npc-name" placeholder="名称" />
+                <input v-model.number="npc.initialAffinity" class="field-input npc-affinity" type="number" placeholder="0" />
+                <button class="icon-btn" @click="npcEditor.removeNpc(i)">✕</button>
+              </div>
+              <div class="npc-portrait-section">
+                <div class="portrait-chips">
+                  <span v-for="(key, ki) in npc.portraits" :key="ki" class="portrait-chip">
+                    {{ key }}
+                    <button class="chip-remove" @click="npcEditor.removeNpcPortrait(i, ki)">×</button>
+                  </span>
+                </div>
+                <div class="portrait-add-row">
+                  <input
+                    v-model="npcPortraitInputs[i]"
+                    list="portrait-keys-datalist"
+                    class="field-input"
+                    :class="{ invalid: npcPortraitInputs[i] && !knownPortraitKeys.includes(npcPortraitInputs[i] ?? '') }"
+                    style="flex:1"
+                    placeholder="选择或输入别名"
+                    @change="knownPortraitKeys.includes(npcPortraitInputs[i] ?? '') && (npcEditor.addNpcPortrait(i, npcPortraitInputs[i] ?? ''), (npcPortraitInputs[i] = ''))"
+                    @keydown.enter.prevent="knownPortraitKeys.includes(npcPortraitInputs[i] ?? '') && (npcEditor.addNpcPortrait(i, npcPortraitInputs[i] ?? ''), (npcPortraitInputs[i] = ''))"
+                  />
+                </div>
+              </div>
             </div>
             <button class="btn sm" @click="npcEditor.addNpc()">+ 添加 NPC</button>
             <p v-if="npcError" class="field-error">{{ npcError }}</p>
@@ -247,6 +318,7 @@ const {
                 :highlighted="node.id === highlightedId"
                 :collapsed="collapsedIds.has(node.id)"
                 :has-children="(childrenMap.get(node.id)?.length ?? 0) > 0"
+                :default-speaker="manifest?.defaultSpeaker ?? ''"
                 @edit="openEdit(node.entry)"
                 @delete="deleteScene(node.entry)"
                 @add-linear="openCreateFromLinear(node.entry)"
@@ -265,6 +337,7 @@ const {
                   :is-start="false"
                   orphan
                   :highlighted="entry.scene.id === highlightedId"
+                  :default-speaker="manifest?.defaultSpeaker ?? ''"
                   @edit="openEdit(entry)"
                   @delete="deleteScene(entry)"
                   @add-linear="() => {}"
@@ -294,6 +367,7 @@ const {
       :save-error="sceneError"
       :suggested-id="suggestedId"
       :default-speaker="manifest?.defaultSpeaker ?? ''"
+      :speaker-portrait-map="speakerPortraitMap"
       @save="onSceneSave"
       @cancel="modalOpen = false"
       @open-quick-create="handleOpenQuickCreate"
@@ -312,7 +386,10 @@ const {
       @save="onQuickSave"
       @cancel="showQuickCreate = false"
     />
-  </div>
+  <datalist id="portrait-keys-datalist">
+    <option v-for="key in knownPortraitKeys" :key="key" :value="key" />
+  </datalist>
+</div>
 </template>
 
 <style scoped>
@@ -556,11 +633,16 @@ const {
 }
 
 /* NPC rows */
+.npc-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.4rem;
+}
 .npc-row {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 0.3rem;
 }
 .npc-id {
   flex: 1.2;
@@ -573,6 +655,52 @@ const {
 .npc-affinity {
   width: 4rem;
   flex-shrink: 0;
+}
+
+/* Portrait chips */
+.portrait-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
+.portrait-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.72rem;
+  color: #f0f0f0;
+}
+.portrait-chip .chip-remove {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 0.75rem;
+}
+.portrait-chip .chip-remove:hover {
+  color: #e06c75;
+}
+.portrait-add-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.2rem;
+}
+.field-input.invalid {
+  border-color: rgba(224, 108, 117, 0.7);
+  color: #e06c75;
+}
+.npc-portrait-section {
+  padding-left: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 .icon-btn {
   background: none;

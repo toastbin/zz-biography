@@ -7,6 +7,7 @@ export interface NpcRow {
   id: string
   name: string
   initialAffinity: number
+  portraits: string[]
 }
 
 export function useNpcEditor(
@@ -20,15 +21,30 @@ export function useNpcEditor(
   const npcSuccess = ref(false)
 
   function initNpcs() {
-    npcRows.value = (manifest.value?.npcs ?? []).map(n => ({ ...n }))
+    npcRows.value = (manifest.value?.npcs ?? []).map(n => ({ ...n, portraits: n.portraits ?? [] }))
   }
 
   function addNpc() {
-    npcRows.value.push({ id: '', name: '', initialAffinity: 0 })
+    npcRows.value.push({ id: '', name: '', initialAffinity: 0, portraits: [] })
   }
 
   function removeNpc(i: number) {
     npcRows.value.splice(i, 1)
+  }
+
+  function addNpcPortrait(npcIdx: number, key: string) {
+    const row = npcRows.value[npcIdx]
+    if (!row) return
+    const trimmed = key.trim()
+    if (trimmed && !row.portraits.includes(trimmed)) {
+      row.portraits.push(trimmed)
+    }
+  }
+
+  function removeNpcPortrait(npcIdx: number, portIdx: number) {
+    const row = npcRows.value[npcIdx]
+    if (!row) return
+    row.portraits.splice(portIdx, 1)
   }
 
   async function saveNpcs() {
@@ -55,6 +71,7 @@ export function useNpcEditor(
         id: r.id.trim(),
         name: r.name.trim(),
         initialAffinity: Number(r.initialAffinity) || 0,
+        ...(r.portraits.length ? { portraits: r.portraits } : {}),
       }))
       const updated = await api.updateManifest(charId.value, { npcs })
       manifest.value = updated
@@ -68,5 +85,5 @@ export function useNpcEditor(
     }
   }
 
-  return { npcRows, npcSaving, npcError, npcSuccess, initNpcs, addNpc, removeNpc, saveNpcs }
+  return { npcRows, npcSaving, npcError, npcSuccess, initNpcs, addNpc, removeNpc, saveNpcs, addNpcPortrait, removeNpcPortrait }
 }

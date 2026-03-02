@@ -159,6 +159,7 @@ export function adminPlugin(): Plugin {
             const merged: StoryManifest = {
               ...existing,
               ...(updates.defaultSpeaker !== undefined ? { defaultSpeaker: updates.defaultSpeaker } : {}),
+              ...(updates.defaultSpeakerPortraits !== undefined ? { defaultSpeakerPortraits: updates.defaultSpeakerPortraits } : {}),
               ...(updates.startSceneId !== undefined ? { startSceneId: updates.startSceneId } : {}),
               ...(updates.assets !== undefined ? { assets: updates.assets } : {}),
               ...(updates.scenes !== undefined ? { scenes: updates.scenes } : {}),

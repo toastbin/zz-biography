@@ -16,6 +16,7 @@ const props = defineProps<{
   saveError?: string
   suggestedId?: string
   defaultSpeaker?: string
+  speakerPortraitMap?: Record<string, string[]>
 }>()
 
 const emit = defineEmits<{
@@ -46,6 +47,13 @@ watch(
         }
       }
     }
+  },
+)
+
+watch(
+  () => form.fSpeaker.value,
+  () => {
+    form.fPortrait.value = ''
   },
 )
 
@@ -100,7 +108,20 @@ defineExpose({
 
         <label class="field-label">
           portrait
+          <select
+            v-if="speakerPortraitMap && speakerPortraitMap[form.fSpeaker.value ?? '']?.length"
+            v-model="form.fPortrait.value"
+            class="field-select"
+          >
+            <option value="">（无立绘）</option>
+            <option
+              v-for="key in speakerPortraitMap[form.fSpeaker.value ?? '']"
+              :key="key"
+              :value="key"
+            >{{ key }}</option>
+          </select>
           <input
+            v-else
             v-model="form.fPortrait.value"
             class="field-input"
             :placeholder="`已知别名：${knownPortraitKeys.join(', ') || '—（可为空）'}`"

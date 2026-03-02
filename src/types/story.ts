@@ -2,6 +2,8 @@ export interface NpcDefinition {
   id: string
   name: string
   initialAffinity: number
+  /** portrait alias keys for this NPC */
+  portraits?: string[]
 }
 
 export interface AffinityEffect {
@@ -52,6 +54,8 @@ export interface StoryManifest {
   startSceneId: string
   /** Fallback speaker name when a scene omits the speaker field */
   defaultSpeaker?: string
+  /** portrait alias keys for the protagonist (defaultSpeaker) */
+  defaultSpeakerPortraits?: string[]
   assets?: StoryAssets
   /** Paths relative to the character directory, e.g. "w_001.json", "past/w_past_001.json" */
   scenes: string[]

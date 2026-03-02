@@ -37,7 +37,7 @@ export function useAdminApi() {
 
   function updateManifest(
     id: string,
-    updates: { defaultSpeaker?: string; startSceneId?: string; assets?: StoryAssets; npcs?: NpcDefinition[] },
+    updates: { defaultSpeaker?: string; defaultSpeakerPortraits?: string[]; startSceneId?: string; assets?: StoryAssets; npcs?: NpcDefinition[] },
   ): Promise<StoryManifest> {
     return apiFetch(`/api/admin/stories/${encodeURIComponent(id)}/manifest`, {
       method: 'PUT',

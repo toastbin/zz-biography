@@ -1,15 +1,28 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { TreeNode } from '../composables/useTreeLayout'
 import { CARD_H } from '../composables/useTreeLayout'
 
-defineProps<{
+const props = defineProps<{
   node: TreeNode
   isStart: boolean
   orphan?: boolean
   highlighted?: boolean
   collapsed?: boolean
   hasChildren?: boolean
+  defaultSpeaker?: string
 }>()
+
+const speakerLabel = computed(() => {
+  const s = props.node.entry.scene.speaker
+  return s && s.trim() ? s : (props.defaultSpeaker ?? null)
+})
+
+const speakerSide = computed(() => {
+  const s = props.node.entry.scene.speaker
+  const def = props.defaultSpeaker ?? null
+  return s && s.trim() && s !== def ? 'right' : 'left'
+})
 
 const emit = defineEmits<{
   edit: []
@@ -35,6 +48,10 @@ const emit = defineEmits<{
         {{ node.entry.sceneType.toUpperCase() }}
       </span>
       <button class="icon-btn node-delete" @click.stop="emit('delete')" title="删除">✕</button>
+    </div>
+    <div v-if="speakerLabel" class="node-speaker" :class="speakerSide">
+      <span class="speaker-arrow">{{ speakerSide === 'right' ? '→' : '←' }}</span>
+      <span class="speaker-name">{{ speakerLabel }}：</span>
     </div>
     <p class="node-text">{{ node.entry.scene.text?.slice(0, 55) }}</p>
     <ul v-if="node.entry.sceneType === 'choice' && node.entry.scene.choices?.length" class="node-choices">
@@ -155,6 +172,33 @@ const emit = defineEmits<{
 }
 .subtree-toggle:hover {
   color: rgba(240, 192, 64, 0.85);
+}
+
+.node-speaker {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+}
+
+.node-speaker.left {
+  color: rgba(97, 175, 239, 0.6);
+  flex-direction: row;
+}
+
+.node-speaker.right {
+  color: rgba(229, 192, 123, 0.65);
+  flex-direction: row-reverse;
+}
+
+.speaker-arrow {
+  flex-shrink: 0;
+}
+
+.speaker-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .node-choices {

@@ -98,6 +98,22 @@ interface Character {
 
 管理后台 `SceneModal` 的 speaker 字段旁会显示提示徽章（`← 左侧` / `→ 右侧`），方便编辑时预判立绘方向。
 
+## 人物立绘别名绑定
+
+每个角色（主角和 NPC）可在管理后台绑定多个立绘别名 key：
+
+| 字段 | 位置 | 说明 |
+|------|------|------|
+| `StoryManifest.defaultSpeakerPortraits` | MANIFEST 区 "portrait (主角)" chip 列表 | 主角的立绘别名 key 数组 |
+| `NpcDefinition.portraits` | NPCS 区每行的立绘 chip 子行 | 对应 NPC 的立绘别名 key 数组 |
+
+每个 chip 列表支持：输入别名 key 后按 Enter 或点击 `+` 添加，点击 `×` 移除。
+
+绑定后，在场景编辑弹窗中选择 speaker 时：
+- 若该 speaker 有绑定的立绘别名 → `portrait` 字段变为下拉框，可从绑定的别名中选择
+- 若该 speaker 无绑定别名 → `portrait` 字段保持为自由文本输入框
+- 切换 speaker 时 portrait 值自动重置
+
 ---
 
 ## 扩展规划
