@@ -1,4 +1,4 @@
-import type { StoryManifest, RawStoryScene, StoryAssets } from '@/types/story'
+import type { StoryManifest, RawStoryScene, StoryAssets, NpcDefinition } from '@/types/story'
 
 export interface SceneEntry {
   filePath: string
@@ -37,7 +37,7 @@ export function useAdminApi() {
 
   function updateManifest(
     id: string,
-    updates: { defaultSpeaker?: string; startSceneId?: string; assets?: StoryAssets },
+    updates: { defaultSpeaker?: string; startSceneId?: string; assets?: StoryAssets; npcs?: NpcDefinition[] },
   ): Promise<StoryManifest> {
     return apiFetch(`/api/admin/stories/${encodeURIComponent(id)}/manifest`, {
       method: 'PUT',

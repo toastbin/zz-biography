@@ -5,4 +5,5 @@ export interface SaveSlot {
   visitedPath: string[]
   choicesTaken: Record<string, number>
   savedAt: number
+  affinitySnapshot?: Record<string, number>
 }

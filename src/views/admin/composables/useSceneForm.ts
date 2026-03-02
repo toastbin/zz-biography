@@ -11,7 +11,17 @@ export function useSceneForm() {
   const fText = ref('')
   const fType = ref<'linear' | 'choice' | 'terminal'>('linear')
   const fNext = ref('')
-  const fChoices = ref<Array<{ text: string; nextSceneId: string; condition: string }>>([])
+  const fChoices = ref<
+    Array<{
+      text: string
+      nextSceneId: string
+      condition: string
+      affinityEffectNpcId: string
+      affinityEffectDelta: string
+      affinityCondNpcId: string
+      affinityCondMinValue: string
+    }>
+  >([])
   const fError = ref('')
   const fSaving = ref(false)
 
@@ -40,6 +50,10 @@ export function useSceneForm() {
         text: c.text,
         nextSceneId: c.nextSceneId,
         condition: c.condition ?? '',
+        affinityEffectNpcId: c.affinityEffects?.[0]?.npcId ?? '',
+        affinityEffectDelta: c.affinityEffects?.[0]?.delta !== undefined ? String(c.affinityEffects[0].delta) : '',
+        affinityCondNpcId: c.affinityCondition?.npcId ?? '',
+        affinityCondMinValue: c.affinityCondition?.minValue !== undefined ? String(c.affinityCondition.minValue) : '',
       }))
     }
     fError.value = ''
@@ -60,11 +74,21 @@ export function useSceneForm() {
     } else if (fType.value === 'choice') {
       scene.choices = fChoices.value
         .filter(c => c.text || c.nextSceneId)
-        .map(c => ({
-          text: c.text,
-          nextSceneId: c.nextSceneId,
-          ...(c.condition ? { condition: c.condition } : {}),
-        }))
+        .map(c => {
+          const delta = c.affinityEffectDelta !== '' ? parseInt(c.affinityEffectDelta, 10) : NaN
+          const minValue = c.affinityCondMinValue !== '' ? parseInt(c.affinityCondMinValue, 10) : NaN
+          return {
+            text: c.text,
+            nextSceneId: c.nextSceneId,
+            ...(c.condition ? { condition: c.condition } : {}),
+            ...(c.affinityEffectNpcId && !isNaN(delta)
+              ? { affinityEffects: [{ npcId: c.affinityEffectNpcId, delta }] }
+              : {}),
+            ...(c.affinityCondNpcId && !isNaN(minValue)
+              ? { affinityCondition: { npcId: c.affinityCondNpcId, minValue } }
+              : {}),
+          }
+        })
     }
     return scene
   }
@@ -93,7 +117,15 @@ export function useSceneForm() {
   }
 
   function addChoice() {
-    fChoices.value.push({ text: '', nextSceneId: '', condition: '' })
+    fChoices.value.push({
+      text: '',
+      nextSceneId: '',
+      condition: '',
+      affinityEffectNpcId: '',
+      affinityEffectDelta: '',
+      affinityCondNpcId: '',
+      affinityCondMinValue: '',
+    })
   }
 
   function removeChoice(i: number) {

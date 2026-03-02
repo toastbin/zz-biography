@@ -11,6 +11,7 @@ const props = defineProps<{
   allSceneIds: string[]
   knownBgKeys: string[]
   knownPortraitKeys: string[]
+  knownNpcs?: Array<{ id: string; name: string }>
   saving?: boolean
   saveError?: string
   suggestedId?: string
@@ -134,16 +135,33 @@ defineExpose({
         <!-- choices (choice) -->
         <div v-if="form.fType.value === 'choice'" class="choices-editor">
           <p class="field-label-text">Choices</p>
-          <div v-for="(ch, i) in form.fChoices.value" :key="i" class="choice-row">
-            <input v-model="ch.text" class="field-input choice-text" placeholder="选项文本" />
-            <span class="arrow-cell">→</span>
-            <select v-model="ch.nextSceneId" class="field-select choice-next">
-              <option value="">—</option>
-              <option v-for="sid in allSceneIds" :key="sid" :value="sid">{{ sid }}</option>
-            </select>
-            <button class="icon-btn choice-quick-add" @click.prevent="emit('open-quick-create', i)" title="新建并链接场景">＋</button>
-            <input v-model="ch.condition" class="field-input choice-condition" placeholder="条件（可选）" />
-            <button class="icon-btn" @click="form.removeChoice(i)">✕</button>
+          <div v-for="(ch, i) in form.fChoices.value" :key="i" class="choice-block">
+            <div class="choice-row">
+              <input v-model="ch.text" class="field-input choice-text" placeholder="选项文本" />
+              <span class="arrow-cell">→</span>
+              <select v-model="ch.nextSceneId" class="field-select choice-next">
+                <option value="">—</option>
+                <option v-for="sid in allSceneIds" :key="sid" :value="sid">{{ sid }}</option>
+              </select>
+              <button class="icon-btn choice-quick-add" @click.prevent="emit('open-quick-create', i)" title="新建并链接场景">＋</button>
+              <input v-model="ch.condition" class="field-input choice-condition" placeholder="条件（可选）" />
+              <button class="icon-btn" @click="form.removeChoice(i)">✕</button>
+            </div>
+            <div v-if="knownNpcs && knownNpcs.length" class="affinity-row">
+              <span class="affinity-label">效果</span>
+              <select v-model="ch.affinityEffectNpcId" class="field-select affinity-npc">
+                <option value="">— NPC —</option>
+                <option v-for="npc in knownNpcs" :key="npc.id" :value="npc.id">{{ npc.name }}</option>
+              </select>
+              <input v-model="ch.affinityEffectDelta" class="field-input affinity-delta" placeholder="±n" type="number" />
+              <span class="affinity-label">解锁</span>
+              <select v-model="ch.affinityCondNpcId" class="field-select affinity-npc">
+                <option value="">— NPC —</option>
+                <option v-for="npc in knownNpcs" :key="npc.id" :value="npc.id">{{ npc.name }}</option>
+              </select>
+              <span class="affinity-ge">≥</span>
+              <input v-model="ch.affinityCondMinValue" class="field-input affinity-min" placeholder="0" type="number" />
+            </div>
           </div>
           <button class="btn sm" @click="form.addChoice()">+ Add Choice</button>
         </div>
@@ -282,10 +300,51 @@ defineExpose({
   gap: 0.4rem;
 }
 
+.choice-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.4rem;
+}
+
 .choice-row {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.affinity-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-left: 0.2rem;
+}
+
+.affinity-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.affinity-ge {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.affinity-npc {
+  flex: 1;
+  font-size: 0.8rem;
+  min-width: 0;
+}
+
+.affinity-delta,
+.affinity-min {
+  width: 4.5rem;
+  flex-shrink: 0;
+  font-size: 0.8rem;
 }
 .choice-text {
   flex: 1.8;

@@ -22,5 +22,12 @@
     "w_end.json",
     "w_mission_002.json",
     "w_mission_003.json"
+  ],
+  "npcs": [
+    {
+      "id": "1",
+      "name": "sc",
+      "initialAffinity": 20
+    }
   ]
 }

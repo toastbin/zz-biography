@@ -162,6 +162,7 @@ export function adminPlugin(): Plugin {
               ...(updates.startSceneId !== undefined ? { startSceneId: updates.startSceneId } : {}),
               ...(updates.assets !== undefined ? { assets: updates.assets } : {}),
               ...(updates.scenes !== undefined ? { scenes: updates.scenes } : {}),
+              ...(updates.npcs !== undefined ? { npcs: updates.npcs } : {}),
             }
             atomicWrite(manifestPath, merged)
             return json(res, 200, merged)

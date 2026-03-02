@@ -9,6 +9,7 @@ const props = defineProps<{
   visitedPath: string[]
   choicesTaken: Record<string, number>
   defaultName: string
+  affinitySnapshot?: Record<string, number>
 }>()
 
 const emit = defineEmits<{
@@ -42,6 +43,7 @@ function confirmSave() {
     visitedPath: [...props.visitedPath],
     choicesTaken: { ...props.choicesTaken },
     savedAt: Date.now(),
+    ...(props.affinitySnapshot ? { affinitySnapshot: { ...props.affinitySnapshot } } : {}),
   }
   save(slot)
   slots.value = loadAll()

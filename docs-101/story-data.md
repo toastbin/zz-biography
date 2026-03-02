@@ -44,6 +44,9 @@ public/stories/
       "determined": "/portraits/warrior_determined.png"
     }
   },
+  "npcs": [
+    { "id": "qingyue", "name": "清月", "initialAffinity": 0 }
+  ],
   "scenes": [
     "w_001.json",
     "w_002.json",
@@ -57,9 +60,18 @@ public/stories/
 
 - `defaultSpeaker`：场景文件省略 `speaker` 字段时的默认说话人
 - `assets.bg` / `assets.portrait`：别名 → 实际路径的映射表，场景文件中统一使用别名
+- `npcs`：可选，NPC 好感度定义列表（见下文）
 - `scenes`：路径相对于当前角色目录，顺序不影响逻辑，建议按故事流程排列
 - **新增场景文件后必须在 `scenes` 中补充路径**，否则运行时不会加载
 - **新增图片后在 `assets` 中注册别名**，场景文件无需关心实际路径
+
+### NpcDefinition
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | `string` | 机器键，如 `"qingyue"` |
+| `name` | `string` | 显示名，如 `"清月"` |
+| `initialAffinity` | `number` | 初始好感度值 |
 
 ---
 
@@ -94,9 +106,33 @@ public/stories/
 ```json
 {
   "text": "询问他的过去",
-  "nextSceneId": "w_past_001"
+  "nextSceneId": "w_past_001",
+  "affinityEffects": [{ "npcId": "qingyue", "delta": 5 }],
+  "affinityCondition": { "npcId": "qingyue", "minValue": 3 }
 }
 ```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `text` | `string` | 选项文本 |
+| `nextSceneId` | `string` | 目标场景 ID |
+| `condition` | `string?` | 显示条件（保留字段） |
+| `affinityEffects` | `AffinityEffect[]?` | 选项被选中时触发的好感度变化列表 |
+| `affinityCondition` | `AffinityCondition?` | 解锁条件：好感度 ≥ minValue 才可选 |
+
+**AffinityEffect：**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `npcId` | `string` | 目标 NPC id |
+| `delta` | `number` | 好感度增减量（正负整数） |
+
+**AffinityCondition：**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `npcId` | `string` | 目标 NPC id |
+| `minValue` | `number` | 好感度阈值，玩家当前值 ≥ minValue 才解锁 |
 
 ### 终结场景
 

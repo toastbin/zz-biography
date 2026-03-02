@@ -8,7 +8,13 @@
   "choices": [
     {
       "text": "询问他的过去",
-      "nextSceneId": "w_past_001"
+      "nextSceneId": "w_past_001",
+      "affinityEffects": [
+        {
+          "npcId": "1",
+          "delta": -10
+        }
+      ]
     },
     {
       "text": "直接谈任务",

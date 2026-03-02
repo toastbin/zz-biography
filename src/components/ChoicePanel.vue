@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import type { StoryChoice } from '@/types/story'
 
+interface ChoiceWithLock extends StoryChoice {
+  locked?: boolean
+  lockedHint?: string
+}
+
 defineProps<{
-  choices: StoryChoice[]
+  choices: ChoiceWithLock[]
 }>()
 
 defineEmits<{
-  choose: [choice: StoryChoice, index: number]
+  choose: [choice: ChoiceWithLock, index: number]
 }>()
 </script>
 
@@ -16,9 +21,14 @@ defineEmits<{
       v-for="(choice, index) in choices"
       :key="choice.nextSceneId"
       class="choice-button"
-      @click="$emit('choose', choice, index)"
+      :class="{ locked: choice.locked }"
+      :disabled="choice.locked"
+      @click="!choice.locked && $emit('choose', choice, index)"
     >
       {{ choice.text }}
+      <span v-if="choice.locked && choice.lockedHint" class="lock-hint">
+        🔒 {{ choice.lockedHint }}
+      </span>
     </button>
   </div>
 </template>
@@ -51,9 +61,21 @@ defineEmits<{
     color 0.2s;
 }
 
-.choice-button:hover {
+.choice-button:hover:not(.locked) {
   background: rgba(240, 192, 64, 0.2);
   border-color: #f0c040;
   color: #f0c040;
+}
+
+.choice-button.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.lock-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 0.25rem;
 }
 </style>

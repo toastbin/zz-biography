@@ -311,7 +311,33 @@ export const MAX_SAVES = 20  // 改成期望数量
 
 ---
 
-### 2.7 管理面板（`/admin`，仅开发环境）
+### 2.7 NPC 好感度系统
+
+每个故事可在 `index.json` 的 `npcs` 字段定义 NPC 列表，为每个 NPC 设置机器键（`id`）、显示名（`name`）和初始好感度（`initialAffinity`）。
+
+#### 玩法说明
+
+| 功能 | 说明 |
+|------|------|
+| 好感度变化 | 玩家选择含 `affinityEffects` 的选项时，对应 NPC 好感度即时增减 |
+| 即时 Toast | 变化发生后在屏幕顶部居中显示 NPC 名（金色）+ 增减量（绿/红），1.8s 后消失；多个变化串行展示 |
+| 锁定选项 | 选项设有 `affinityCondition` 时，若玩家好感度不足则显示锁定态（半透明 + 🔒 提示），不可点击 |
+
+#### 存储
+
+| 键名 | 内容 |
+|------|------|
+| `biography_affinity_{characterId}` | `Record<string, number>`，当前好感度快照，随每次变化实时写入 |
+| `biography_saves`（存档槽） | 含 `affinitySnapshot` 字段，读档时恢复好感度状态 |
+
+#### 路由行为
+
+- `?fresh=1`：好感度重置为各 NPC 的 `initialAffinity`（合并已存 localStorage）
+- `?slot=N`：从存档恢复 `affinitySnapshot`，覆盖 localStorage 状态
+
+---
+
+### 2.8 管理面板（`/admin`，仅开发环境）
 
 开发模式下（`import.meta.env.DEV`）在主菜单右下角显示隐蔽的 **Admin** 链接。生产构建中路由直接重定向至 `/`。
 
@@ -329,6 +355,7 @@ export const MAX_SAVES = 20  // 改成期望数量
 | 区域 | 功能 |
 |------|------|
 | MANIFEST | 编辑 `defaultSpeaker`、`startSceneId` 并保存 |
+| NPCS | NPC 列表管理：id / 名称 / 初始好感度，增删行并保存 |
 | BG ALIASES | key→path 映射表，增删行并保存 |
 | PORTRAIT ALIASES | 同上，用于立绘 |
 
@@ -369,6 +396,7 @@ export const MAX_SAVES = 20  // 改成期望数量
 | `src/views/admin/components/QuickCreateModal.vue` | 从 choice 行快速新建场景 |
 | `src/views/admin/components/AliasEditor.vue` | 别名表编辑组件 |
 | `src/views/admin/composables/useAliasManager.ts` | BG/Portrait alias 状态管理 |
+| `src/views/admin/composables/useNpcEditor.ts` | NPC 好感度定义编辑 |
 | `src/views/admin/composables/useTreeLayout.ts` | 场景树布局算法 |
 
 ---

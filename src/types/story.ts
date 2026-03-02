@@ -1,7 +1,25 @@
+export interface NpcDefinition {
+  id: string
+  name: string
+  initialAffinity: number
+}
+
+export interface AffinityEffect {
+  npcId: string
+  delta: number
+}
+
+export interface AffinityCondition {
+  npcId: string
+  minValue: number
+}
+
 export interface StoryChoice {
   text: string
   nextSceneId: string
   condition?: string
+  affinityEffects?: AffinityEffect[]
+  affinityCondition?: AffinityCondition
 }
 
 /** Runtime scene — all fields fully resolved */
@@ -37,6 +55,7 @@ export interface StoryManifest {
   assets?: StoryAssets
   /** Paths relative to the character directory, e.g. "w_001.json", "past/w_past_001.json" */
   scenes: string[]
+  npcs?: NpcDefinition[]
 }
 
 /**

@@ -15,7 +15,10 @@ import ChoicePanel from '@/components/ChoicePanel.vue'
 import GameMenu from '@/components/GameMenu.vue'
 import DecisionTreeView from '@/components/DecisionTreeView.vue'
 import SaveDialog from '@/components/SaveDialog.vue'
+import AffinityToast from '@/components/AffinityToast.vue'
 import { useSaves } from '@/composables/useSaves'
+import { useAffinity } from '@/composables/useAffinity'
+import type { AppliedDiff } from '@/composables/useAffinity'
 
 const route = useRoute()
 const router = useRouter()
@@ -36,10 +39,23 @@ const showMenu = ref(false)
 const showTree = ref(false)
 const showSave = ref(false)
 
+const affinity = useAffinity()
+const toastQueue = ref<AppliedDiff[]>([])
+
 const defaultSaveName = computed(() => {
   const text = currentScene.value?.text ?? ''
   return text.length > 10 ? text.slice(0, 10) + '…' : text
 })
+
+const visibleChoices = computed(() =>
+  (currentScene.value?.choices ?? []).map(c => ({
+    ...c,
+    locked: !affinity.isChoiceUnlocked(c),
+    lockedHint: c.affinityCondition
+      ? `${affinity.getNpcName(c.affinityCondition.npcId)} 好感度 ≥ ${c.affinityCondition.minValue}`
+      : undefined,
+  })),
+)
 
 const hasChoices = computed(
   () => !!currentScene.value?.choices && currentScene.value.choices.length > 0,
@@ -86,6 +102,8 @@ onMounted(async () => {
     const data: CharacterStory = { id: manifest.id, startSceneId: manifest.startSceneId, scenes }
     story.value = data
 
+    affinity.initAffinity(characterId, manifest.npcs ?? [])
+
     const slotQuery = route.query.slot
     if (slotQuery !== undefined) {
       const { loadAll } = useSaves()
@@ -94,6 +112,9 @@ onMounted(async () => {
       if (namedSlot) {
         visitedPath.value = namedSlot.visitedPath
         choicesTaken.value = namedSlot.choicesTaken
+        if (namedSlot.affinitySnapshot) {
+          affinity.loadSnapshot(characterId, namedSlot.affinitySnapshot)
+        }
         saveProgress()
       } else {
         loadProgress(data.startSceneId)
@@ -101,6 +122,7 @@ onMounted(async () => {
     } else if (route.query.fresh === '1') {
       visitedPath.value = [data.startSceneId]
       choicesTaken.value = {}
+      affinity.resetAffinity()
       saveProgress()
     } else {
       loadProgress(data.startSceneId)
@@ -129,10 +151,15 @@ function advance() {
 
 function choose(choice: StoryChoice, index: number) {
   if (!story.value || !currentScene.value) return
+  if (!affinity.isChoiceUnlocked(choice)) return
   const currentId = currentScene.value.id
   choicesTaken.value[currentId] = index
   visitedPath.value.push(choice.nextSceneId)
   currentScene.value = story.value.scenes[choice.nextSceneId] ?? null
+  if (choice.affinityEffects?.length) {
+    const diffs = affinity.applyEffects(choice.affinityEffects)
+    toastQueue.value.push(...diffs)
+  }
   saveProgress()
 }
 
@@ -182,7 +209,7 @@ function goBack() {
 
       <ChoicePanel
         v-if="hasChoices"
-        :choices="currentScene.choices!"
+        :choices="visibleChoices"
         @choose="(c, i) => choose(c, i)"
       />
 
@@ -224,8 +251,12 @@ function goBack() {
         :visited-path="visitedPath"
         :choices-taken="choicesTaken"
         :default-name="defaultSaveName"
+        :affinity-snapshot="affinity.getSnapshot()"
         @close="showSave = false"
       />
+
+      <!-- Affinity toast -->
+      <AffinityToast :queue="toastQueue" @consumed="toastQueue.shift()" />
     </template>
   </div>
 </template>

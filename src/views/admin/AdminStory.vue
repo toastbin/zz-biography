@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useAdminApi, type SceneEntry } from '@/composables/useAdminApi'
 import type { StoryManifest } from '@/types/story'
 import { useAliasManager } from './composables/useAliasManager'
+import { useNpcEditor } from './composables/useNpcEditor'
 import { useTreeLayout } from './composables/useTreeLayout'
 import { useManifestForm } from './composables/useManifestForm'
 import { useSubtreeCollapse } from './composables/useSubtreeCollapse'
@@ -35,6 +36,9 @@ const aliasManager = useAliasManager(manifest, api, characterId)
 const { bgAliases, portraitAliases, bgSaving, portraitSaving, bgError, portraitError, bgSuccess, portraitSuccess } =
   aliasManager
 
+const npcEditor = useNpcEditor(manifest, api, characterId)
+const { npcRows, npcSaving, npcError, npcSuccess } = npcEditor
+
 onMounted(async () => {
   try {
     const data = await api.getStory(characterId.value)
@@ -43,6 +47,7 @@ onMounted(async () => {
     initManifestForm()
     aliasManager.initBgAliases()
     aliasManager.initPortraitAliases()
+    npcEditor.initNpcs()
   } catch (e) {
     loadError.value = String(e)
   } finally {
@@ -55,6 +60,7 @@ onMounted(async () => {
 const sceneIds = computed(() => scenes.value.map(e => e.scene.id))
 const knownBgKeys = computed(() => bgAliases.value.map(r => r.key).filter(Boolean))
 const knownPortraitKeys = computed(() => portraitAliases.value.map(r => r.key).filter(Boolean))
+const knownNpcs = computed(() => manifest.value?.npcs?.map(n => ({ id: n.id, name: n.name })) ?? [])
 const startSceneId = computed(() => manifest.value?.startSceneId ?? '')
 
 // ─── tree layout ──────────────────────────────────────────────────────────────
@@ -125,6 +131,23 @@ const {
             <p v-if="mfSuccess" class="field-success">已保存</p>
             <button class="btn primary sm" :disabled="mfSaving" @click="saveManifestCore">
               {{ mfSaving ? '保存中…' : 'Save Manifest' }}
+            </button>
+          </section>
+
+          <!-- NPCs section -->
+          <section class="section">
+            <h2 class="section-title">NPCS</h2>
+            <div v-for="(npc, i) in npcRows" :key="i" class="npc-row">
+              <input v-model="npc.id" class="field-input npc-id" placeholder="id" />
+              <input v-model="npc.name" class="field-input npc-name" placeholder="名称" />
+              <input v-model.number="npc.initialAffinity" class="field-input npc-affinity" type="number" placeholder="0" />
+              <button class="icon-btn" @click="npcEditor.removeNpc(i)">✕</button>
+            </div>
+            <button class="btn sm" @click="npcEditor.addNpc()">+ 添加 NPC</button>
+            <p v-if="npcError" class="field-error">{{ npcError }}</p>
+            <p v-if="npcSuccess" class="field-success">已保存</p>
+            <button class="btn primary sm" :disabled="npcSaving" @click="npcEditor.saveNpcs()">
+              {{ npcSaving ? '保存中…' : 'Save NPCs' }}
             </button>
           </section>
 
@@ -266,6 +289,7 @@ const {
       :all-scene-ids="sceneIds"
       :known-bg-keys="knownBgKeys"
       :known-portrait-keys="knownPortraitKeys"
+      :known-npcs="knownNpcs"
       :saving="sceneSaving"
       :save-error="sceneError"
       :suggested-id="suggestedId"
@@ -528,6 +552,39 @@ const {
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* NPC rows */
+.npc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+}
+.npc-id {
+  flex: 1.2;
+  min-width: 0;
+}
+.npc-name {
+  flex: 1.5;
+  min-width: 0;
+}
+.npc-affinity {
+  width: 4rem;
+  flex-shrink: 0;
+}
+.icon-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.icon-btn:hover {
+  color: #e06c75;
 }
 
 /* Scene search */
