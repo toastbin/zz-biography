@@ -3,5 +3,6 @@
   "background": "",
   "text": "遇到一个可疑的人",
   "title": "遇到人",
-  "type": "terminal"
+  "type": "linear",
+  "next": ""
 }

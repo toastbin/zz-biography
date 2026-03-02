@@ -48,7 +48,7 @@ const emit = defineEmits<{
       @click.stop="emit('toggle-collapse')"
       :title="collapsed ? '展开子节点' : '折叠子节点'"
     >
-      {{ collapsed ? '▸ 折叠' : '▾ 展开' }}
+      {{ collapsed ? '➡️ 折叠' : '⬇️ 展开' }}
     </button>
   </div>
 
