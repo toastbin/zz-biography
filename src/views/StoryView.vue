@@ -29,6 +29,7 @@ const LS_CHOICES = `biography_choices_${characterId}`
 
 const story = ref<CharacterStory | null>(null)
 const currentScene = ref<StoryScene | null>(null)
+const manifestRef = ref<StoryManifest | null>(null)
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
@@ -63,6 +64,13 @@ const hasChoices = computed(
 const isTerminal = computed(
   () => !currentScene.value?.next && !hasChoices.value,
 )
+
+const portraitSide = computed((): 'left' | 'right' => {
+  const speaker = currentScene.value?.speaker
+  const def = manifestRef.value?.defaultSpeaker ?? null
+  if (!speaker || speaker === def) return 'left'
+  return 'right'
+})
 
 function saveProgress() {
   localStorage.setItem(LS_PATH, JSON.stringify(visitedPath.value))
@@ -101,6 +109,7 @@ onMounted(async () => {
 
     const data: CharacterStory = { id: manifest.id, startSceneId: manifest.startSceneId, scenes }
     story.value = data
+    manifestRef.value = manifest
 
     affinity.initAffinity(characterId, manifest.npcs ?? [])
 
@@ -205,7 +214,7 @@ function goBack() {
 
     <template v-else-if="currentScene">
       <SceneBackground :src="currentScene.background" />
-      <CharacterPortrait :src="currentScene.portrait" />
+      <CharacterPortrait :src="currentScene.portrait" :position="portraitSide" />
 
       <ChoicePanel
         v-if="hasChoices"

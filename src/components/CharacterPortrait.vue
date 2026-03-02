@@ -1,12 +1,20 @@
 <script setup lang="ts">
 defineProps<{
   src: string | null
+  position?: 'left' | 'right'
 }>()
 </script>
 
 <template>
   <Transition name="portrait-fade">
-    <img v-if="src" :key="src" :src="src" class="character-portrait" alt="character portrait" />
+    <img
+      v-if="src"
+      :key="src"
+      :src="src"
+      class="character-portrait"
+      :class="{ right: position === 'right' }"
+      alt="character portrait"
+    />
   </Transition>
 </template>
 
@@ -19,6 +27,11 @@ defineProps<{
   object-fit: contain;
   z-index: 2;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
+.character-portrait.right {
+  left: unset;
+  right: 2rem;
 }
 
 .portrait-fade-enter-active,

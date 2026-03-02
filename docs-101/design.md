@@ -82,6 +82,24 @@ interface Character {
 
 ---
 
+---
+
+## 角色立绘定位规则
+
+立绘位置由当前场景的说话人与 `manifest.defaultSpeaker` 的关系决定，无需额外字段：
+
+| 条件 | 立绘位置 |
+|------|---------|
+| `scene.speaker` 为空，或等于 `manifest.defaultSpeaker` | 左侧（`left: 2rem`） |
+| `scene.speaker` 非空且不等于 `manifest.defaultSpeaker` | 右侧（`right: 2rem`） |
+| `manifest.defaultSpeaker` 未设置（无主角定义） | 左侧（fallback） |
+
+实现：`StoryView.vue` 中通过 `portraitSide` computed 推导位置，传入 `CharacterPortrait` 的 `position` prop（`'left' | 'right'`，默认 `'left'`）。
+
+管理后台 `SceneModal` 的 speaker 字段旁会显示提示徽章（`← 左侧` / `→ 右侧`），方便编辑时预判立绘方向。
+
+---
+
 ## 扩展规划
 
 | 功能 | 优先级 | 状态 |

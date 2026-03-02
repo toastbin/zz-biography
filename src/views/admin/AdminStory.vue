@@ -293,6 +293,7 @@ const {
       :saving="sceneSaving"
       :save-error="sceneError"
       :suggested-id="suggestedId"
+      :default-speaker="manifest?.defaultSpeaker ?? ''"
       @save="onSceneSave"
       @cancel="modalOpen = false"
       @open-quick-create="handleOpenQuickCreate"

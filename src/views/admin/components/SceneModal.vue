@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 import type { SceneEntry } from '@/composables/useAdminApi'
 import type { RawStoryScene } from '@/types/story'
 import { useSceneForm } from '../composables/useSceneForm'
@@ -15,6 +15,7 @@ const props = defineProps<{
   saving?: boolean
   saveError?: string
   suggestedId?: string
+  defaultSpeaker?: string
 }>()
 
 const emit = defineEmits<{
@@ -24,6 +25,13 @@ const emit = defineEmits<{
 }>()
 
 const form = useSceneForm()
+
+const portraitHint = computed(() => {
+  const s = form.fSpeaker.value?.trim()
+  const def = props.defaultSpeaker?.trim() ?? ''
+  if (!s || s === def) return '← 左侧'
+  return '→ 右侧'
+})
 
 watch(
   () => props.open,
@@ -101,7 +109,14 @@ defineExpose({
 
         <label class="field-label">
           speaker
-          <input v-model="form.fSpeaker.value" class="field-input" placeholder="（可为空，使用 defaultSpeaker）" />
+          <div class="speaker-row">
+            <select v-model="form.fSpeaker.value" class="field-select">
+              <option value="">（默认：{{ defaultSpeaker || 'defaultSpeaker' }}）← 左侧</option>
+              <option v-if="defaultSpeaker" :value="defaultSpeaker">{{ defaultSpeaker }}（主角）← 左侧</option>
+              <option v-for="npc in knownNpcs" :key="npc.id" :value="npc.name">{{ npc.name }} → 右侧</option>
+            </select>
+            <span class="portrait-hint">{{ portraitHint }}</span>
+          </div>
         </label>
 
         <label class="field-label">
@@ -261,6 +276,23 @@ defineExpose({
 .field-input:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.speaker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.speaker-row .field-input {
+  flex: 1;
+}
+
+.portrait-hint {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .field-error {
