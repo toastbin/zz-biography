@@ -21,13 +21,20 @@
     "w_002_w_mission_001.json",
     "w_end.json",
     "w_mission_002.json",
-    "w_mission_003.json"
+    "w_mission_003.json",
+    "c4/w_003.json"
   ],
   "npcs": [
     {
       "id": "1",
       "name": "宋超",
-      "initialAffinity": 20
+      "initialAffinity": 20,
+      "portraits": [
+        "neutral"
+      ]
     }
+  ],
+  "defaultSpeakerPortraits": [
+    "sad"
   ]
 }

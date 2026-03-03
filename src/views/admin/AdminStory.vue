@@ -283,7 +283,7 @@ const {
             </div>
           </div>
 
-          <div class="tree-scroll">
+          <div class="tree-scroll" :class="{ 'scroll-locked': modalOpen || showQuickCreate }">
             <!-- Main tree canvas -->
             <div
               class="tree-canvas"
@@ -549,6 +549,10 @@ const {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.tree-scroll.scroll-locked {
+  overflow: hidden;
 }
 
 .tree-canvas {

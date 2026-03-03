@@ -97,48 +97,65 @@ defineExpose({
           />
         </label>
 
-        <label class="field-label">
-          background
-          <input
-            v-model="form.fBackground.value"
-            class="field-input"
-            :placeholder="`已知别名：${knownBgKeys.join(', ') || '—'}`"
-          />
-        </label>
-
-        <label class="field-label">
-          portrait
-          <select
-            v-if="speakerPortraitMap && speakerPortraitMap[form.fSpeaker.value ?? '']?.length"
-            v-model="form.fPortrait.value"
-            class="field-select"
-          >
-            <option value="">（无立绘）</option>
-            <option
-              v-for="key in speakerPortraitMap[form.fSpeaker.value ?? '']"
+        <div class="field-group">
+          <label class="field-label-text">background</label>
+          <div class="asset-picker">
+            <button
+              class="asset-tag"
+              :class="{ selected: !form.fBackground.value }"
+              @click="form.fBackground.value = ''"
+            >（无）</button>
+            <button
+              v-for="key in knownBgKeys"
               :key="key"
-              :value="key"
-            >{{ key }}</option>
-          </select>
-          <input
-            v-else
-            v-model="form.fPortrait.value"
-            class="field-input"
-            :placeholder="`已知别名：${knownPortraitKeys.join(', ') || '—（可为空）'}`"
-          />
-        </label>
-
-        <label class="field-label">
-          speaker
-          <div class="speaker-row">
-            <select v-model="form.fSpeaker.value" class="field-select">
-              <option value="">（默认：{{ defaultSpeaker || 'defaultSpeaker' }}）← 左侧</option>
-              <option v-if="defaultSpeaker" :value="defaultSpeaker">{{ defaultSpeaker }}（主角）← 左侧</option>
-              <option v-for="npc in knownNpcs" :key="npc.id" :value="npc.name">{{ npc.name }} → 右侧</option>
-            </select>
-            <span class="portrait-hint">{{ portraitHint }}</span>
+              class="asset-tag"
+              :class="{ selected: form.fBackground.value === key }"
+              @click="form.fBackground.value = key"
+            >{{ key }}</button>
           </div>
-        </label>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label-text">portrait</label>
+          <div class="asset-picker">
+            <button
+              class="asset-tag"
+              :class="{ selected: !form.fPortrait.value }"
+              @click="form.fPortrait.value = ''"
+            >（无）</button>
+            <button
+              v-for="key in (speakerPortraitMap?.[form.fSpeaker.value ?? ''] ?? knownPortraitKeys)"
+              :key="key"
+              class="asset-tag"
+              :class="{ selected: form.fPortrait.value === key }"
+              @click="form.fPortrait.value = key"
+            >{{ key }}</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label-text">speaker <span class="portrait-hint">{{ portraitHint }}</span></label>
+          <div class="asset-picker">
+            <button
+              class="asset-tag"
+              :class="{ selected: !form.fSpeaker.value }"
+              @click="form.fSpeaker.value = ''"
+            >（默认）</button>
+            <button
+              v-if="defaultSpeaker"
+              class="asset-tag"
+              :class="{ selected: form.fSpeaker.value === defaultSpeaker }"
+              @click="form.fSpeaker.value = defaultSpeaker"
+            >{{ defaultSpeaker }}</button>
+            <button
+              v-for="npc in knownNpcs"
+              :key="npc.id"
+              class="asset-tag"
+              :class="{ selected: form.fSpeaker.value === npc.name }"
+              @click="form.fSpeaker.value = npc.name"
+            >{{ npc.name }}</button>
+          </div>
+        </div>
 
         <label class="field-label">
           text
@@ -199,7 +216,7 @@ defineExpose({
               <input v-model="ch.affinityCondMinValue" class="field-input affinity-min" placeholder="0" type="number" />
             </div>
           </div>
-          <button class="btn sm" @click="form.addChoice()">+ Add Choice</button>
+          <button class="btn sm" @click="() => { form.addChoice(); emit('open-quick-create', form.fChoices.value.length - 1) }">+ Add Choice</button>
         </div>
       </div>
 
@@ -234,10 +251,11 @@ defineExpose({
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 1.75rem;
-  width: 540px;
-  max-width: 100%;
+  width: 700px;
+  max-width: calc(100vw - 2rem);
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -299,21 +317,47 @@ defineExpose({
   cursor: not-allowed;
 }
 
-.speaker-row {
+.field-group {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.speaker-row .field-input {
-  flex: 1;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 .portrait-hint {
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.35);
   white-space: nowrap;
-  flex-shrink: 0;
+  margin-left: 0.4rem;
+}
+
+.asset-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.asset-tag {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  font-family: inherit;
+}
+
+.asset-tag:hover {
+  border-color: #f0c040;
+  color: #f0c040;
+}
+
+.asset-tag.selected {
+  background: rgba(240, 192, 64, 0.15);
+  border-color: #f0c040;
+  color: #f0c040;
 }
 
 .field-error {
